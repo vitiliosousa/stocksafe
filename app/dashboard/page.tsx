@@ -1,0 +1,60 @@
+"use client"
+
+import { useState } from "react"
+import { DashboardLayout } from "@/components/dashboard-layout"
+import { RequisitanteDashboard } from "@/components/requisitante-dashboard"
+import { ComprasDashboard } from "@/components/compras-dashboard"
+import { RecebimentoDashboard } from "@/components/recebimento-dashboard"
+import { QADashboard } from "@/components/qa-dashboard"
+import { AdminDashboard } from "@/components/admin-dashboard"
+
+// Mock user profile - in production, this would come from auth context
+const MOCK_USER = {
+  name: "João Silva",
+  email: "joao.silva@empresa.com",
+  profile: "REQUISITANTE" as const, // Change to test different profiles: REQUISITANTE | COMPRAS | RECEBIMENTO | QA | ADMIN
+  initials: "JS",
+}
+
+export default function DashboardPage() {
+  const [userProfile] = useState<"REQUISITANTE" | "COMPRAS" | "RECEBIMENTO" | "QA" | "ADMIN" | "FORNECEDOR">(MOCK_USER.profile)
+
+  const renderDashboardContent = () => {
+    switch (userProfile) {
+      case "REQUISITANTE":
+        return <RequisitanteDashboard />
+      case "COMPRAS":
+        return <ComprasDashboard />
+      case "RECEBIMENTO":
+        return <RecebimentoDashboard />
+      case "QA":
+        return <QADashboard />
+      case "ADMIN":
+        return <AdminDashboard />
+      default:
+        return <RequisitanteDashboard />
+    }
+  }
+
+  return (
+    <DashboardLayout user={MOCK_USER}>
+      <div className="space-y-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm">
+          <span className="text-muted-foreground">Home</span>
+          <span className="text-muted-foreground">/</span>
+          <span className="text-primary font-medium">Dashboard</span>
+        </div>
+
+        {/* Page Title */}
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold text-emerald-600">Dashboard</h1>
+          <p className="text-muted-foreground">Visão geral do sistema</p>
+        </div>
+
+        {/* Dynamic Dashboard Content */}
+        {renderDashboardContent()}
+      </div>
+    </DashboardLayout>
+  )
+}

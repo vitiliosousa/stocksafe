@@ -1,0 +1,825 @@
+TELA 29: RECEBIMENTO FISCAL/FINANCEIRO
+Rota: /recebimento/fiscal/[id]
+Acesso:
+
+Lista de recebimentos pendentes de conferência fiscal
+Notificação para Financeiro após conferência física concluída
+
+Estrutura:
+Cabeçalho:
+
+Breadcrumb: Home / Recebimento / Conferência Fiscal / Recebimento #[número]
+Título: "Conferência Fiscal - Recebimento #[número]"
+Badge: Status (Aguardando Conferência | Em Conferência | Aprovado | Divergente)
+
+Card: Dados do Recebimento
+Layout em 2 colunas:
+Coluna 1:
+
+Nº Recebimento: [número]
+PO Origem: #[número] (link)
+Fornecedor: [nome]
+Data Recebimento: [data]
+Status Conferência Física: [badge] (Concluída)
+
+Coluna 2:
+
+Valor do PO: R$ [valor]
+Qtd de Itens: [X]
+Recebidos: [Y] itens
+Divergências: [Z] itens
+Status Fiscal: [badge]
+
+Card: Dados da Nota Fiscal
+Formulário:
+
+**Número da Nota Fiscal *** (input text)
+
+Placeholder: "Ex: 12345"
+Validação: obrigatório, numérico
+Verifica duplicidade (alerta se já existe)
+
+
+Série da NF (input text)
+
+Placeholder: "Ex: 1"
+
+
+Chave de Acesso NF-e (input text)
+
+Placeholder: "44 dígitos"
+Máscara: XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX
+Validação: 44 dígitos, validação de DV
+
+
+**Tipo de NF *** (dropdown)
+
+NF-e (Nota Fiscal Eletrônica)
+NFS-e (Nota Fiscal de Serviço)
+Nota Fiscal Manual
+Outro
+
+
+**Data de Emissão *** (date picker)
+
+Validação: não pode ser futuro
+Alerta se > 7 dias da data do recebimento
+
+
+Data de Entrada (date picker)
+
+Default: data do recebimento
+Editável
+
+
+**CFOP *** (input text)
+
+Placeholder: "Ex: 5102"
+Validação: formato XXXX
+Autocomplete com CFOPs comuns
+
+
+Natureza da Operação (input text)
+
+Placeholder: "Ex: Venda de mercadoria"
+Autocomplete
+
+
+**Upload da NF *** (upload)
+
+PDF ou XML
+Tamanho máximo: 10MB
+Se XML: faz parse automático e preenche campos
+Preview do documento
+
+
+Upload do DANFE (upload opcional)
+
+PDF
+Preview
+
+
+
+Card: Comparação PO vs NF
+Tabela Comparativa de Valores:
+Colunas: Item | Valor PO | Valor NF | Divergência
+Linhas:
+
+Subtotal Produtos
+
+PO: R$ [valor calculado do PO]
+NF: [input] R$ (ou auto-preenchido se XML)
+Divergência: [diferença] (visual: verde se =, amarelo/vermelho se ≠)
+
+
+Desconto
+
+PO: R$ [desconto do PO]
+NF: [input] R$
+Divergência: [diferença]
+
+
+Frete
+
+PO: R$ [frete do PO]
+NF: [input] R$
+Divergência: [diferença]
+
+
+Seguro
+
+PO: R$ [valor]
+NF: [input] R$
+Divergência: [diferença]
+
+
+Outras Despesas
+
+PO: R$ [valor]
+NF: [input] R$
+Divergência: [diferença]
+
+
+IVA/ICMS
+
+PO: R$ [valor calculado]
+NF: [input] R$
+Divergência: [diferença]
+
+
+IPI
+
+PO: R$ [valor]
+NF: [input] R$
+Divergência: [diferença]
+
+
+PIS
+
+PO: R$ [valor]
+NF: [input] R$
+Divergência: [diferença]
+
+
+COFINS
+
+PO: R$ [valor]
+NF: [input] R$
+Divergência: [diferença]
+
+
+Outros Impostos
+
+PO: R$ [valor]
+NF: [input] R$
+Divergência: [diferença]
+
+
+TOTAL GERAL
+
+PO: R$ [total do PO] (destaque)
+NF: R$ [total da NF] (destaque)
+Divergência: R$ [diferença] (destaque grande)
+% de divergência
+
+
+
+Indicador Visual Grande:
+
+Se divergência = 0: ✅ "Valores Conferem"
+Se divergência > 0 e < 5%: ⚠️ "Divergência Pequena - Análise Necessária"
+Se divergência ≥ 5%: 🔴 "Divergência Significativa - Ação Obrigatória"
+
+Card: Itens da NF vs Recebimento
+Tabela:
+
+Colunas:
+
+Produto (SKU + Descrição)
+Qtd PO
+Qtd NF (input editável)
+Qtd Recebida (read-only, da conferência física)
+Preço Unit. PO
+Preço Unit. NF (input)
+Subtotal NF
+Conformidade (✅/⚠️/❌)
+
+
+Para cada linha:
+
+Validação: Qtd NF deve = Qtd Recebida (alerta se diferente)
+Validação: Preço NF deve = Preço PO (alerta se diferente)
+Se divergência: campo "Justificativa" (textarea)
+
+
+
+Card: Impostos Detalhados
+Para cada imposto (expansível):
+IVA/ICMS:
+
+Base de Cálculo: [input] R$
+Alíquota: [input] %
+Valor: [calculado] R$
+CST/CSOSN: [input]
+
+IPI:
+
+Base de Cálculo: [input] R$
+Alíquota: [input] %
+Valor: [calculado] R$
+
+PIS:
+
+Base de Cálculo: [input] R$
+Alíquota: [input] %
+Valor: [calculado] R$
+CST: [input]
+
+COFINS:
+
+Base de Cálculo: [input] R$
+Alíquota: [input] %
+Valor: [calculado] R$
+CST: [input]
+
+Botão: "Calcular Impostos Automaticamente" (se XML disponível)
+Card: Divergências e Justificativas
+Se houver divergências:
+Lista de Divergências Detectadas:
+
+Tipo | Descrição | Valor PO | Valor NF | Diferença
+Cada divergência tem:
+
+Campo: "Justificativa" * (textarea obrigatório)
+Dropdown: "Responsável pela Divergência" (Fornecedor | Transportadora | Erro Interno | Outro)
+Checkbox: "Notificar fornecedor sobre divergência"
+
+
+
+Card: Tratamento de Divergências
+Radio buttons:
+
+○ Aprovar NF com Divergências (requer aprovação superior)
+
+Campo: "Aprovador" * (dropdown de gerentes/diretores)
+Campo: "Justificativa da Aprovação" * (textarea)
+
+
+○ Solicitar Nota Fiscal Complementar ao Fornecedor
+
+Campo: "Valor da NF Complementar" (calculado automaticamente)
+Checkbox: "Enviar solicitação por email"
+
+
+○ Solicitar Nota Fiscal de Ajuste/Correção
+
+Campo: "Itens a ajustar" (checklist)
+Campo: "Observações para o fornecedor"
+
+
+○ Rejeitar NF e Bloquear Pagamento
+
+Campo: "Motivo da Rejeição" * (textarea)
+Checkbox: "Gerar processo de devolução"
+
+
+
+Card: GRN (Goods Receipt Note)
+Informações do GRN:
+
+Código GRN: GRN-[auto-gerado]
+Data de Geração: [auto]
+Responsável: [usuário logado]
+Status: (Pendente | Aprovado | Rejeitado)
+
+Observações do GRN:
+
+Textarea para notas gerais
+Checkbox: "Vincular ao processo de Contas a Pagar"
+Se marcado:
+
+Campo: "Condições de Pagamento" (do PO, editável)
+Campo: "Data de Vencimento" (calculada)
+Campo: "Centro de Custo" (dropdown)
+
+
+
+Card: Documentos Fiscais Adicionais
+Upload múltiplo:
+
+Comprovante de Retenção de Impostos
+Guia de Recolhimento
+Certificado de Origem
+Licença de Importação (se aplicável)
+Outros documentos
+
+Validações Globais:
+
+Número NF obrigatório e único
+Data de emissão obrigatória
+Upload da NF obrigatório
+Se divergências > 5%: justificativas obrigatórias
+Se divergências e aprovar: aprovador obrigatório
+
+Botões:
+Salvar Rascunho:
+
+Salva sem finalizar
+Status = em_conferencia
+Toast: "Rascunho salvo"
+
+Aprovar e Gerar GRN:
+
+Validação completa
+Se divergências significativas: exige aprovador
+Modal de confirmação:
+
+"Aprovar Conferência Fiscal?"
+Resumo: Total NF | Total PO | Divergência | Status
+Se divergências: lista resumida
+Checkbox: "Confirmo que revisei todos os valores" *
+
+
+Ao confirmar:
+
+POST /api/recebimentos/fiscal/aprovar
+Gera GRN definitivo com código único
+Atualiza status do recebimento = fiscal_aprovado
+Se sem divergências:
+
+Libera para pagamento imediatamente
+Cria título no Contas a Pagar (se integrado)
+
+
+Se com divergências e aprovado:
+
+Registra divergências no log
+Notifica aprovador
+Libera para pagamento (se aprovador concordou)
+Se solicitou NF complementar: cria pendência
+
+
+Vincula NF ao PO e Recebimento
+Atualiza histórico financeiro do fornecedor
+Gera PDF do GRN com:
+
+Todos os dados
+Comparativos
+Justificativas (se houver)
+Assinaturas digitais
+
+
+Toast: "GRN gerado! Código: GRN-[número]"
+Redireciona:
+
+"Ver GRN" (PDF)
+"Ir para Contas a Pagar" (se integrado)
+"Lista de Recebimentos"
+
+
+
+
+
+Rejeitar NF:
+
+Modal crítico:
+
+"⚠️ Rejeitar Nota Fiscal?"
+Alerta: "O pagamento será bloqueado e o fornecedor notificado"
+Campo: "Motivo Detalhado da Rejeição" * (textarea, min 100 caracteres)
+Checkbox: "Notificar fornecedor imediatamente" *
+Checkbox: "Bloquear futuras NFs deste fornecedor até regularização"
+
+
+Ao confirmar:
+
+Status = fiscal_rejeitado
+Bloqueia pagamento
+Notifica fornecedor com motivos
+Registra no scorecard (-10 pontos)
+Cria pendência no sistema
+Toast: "NF rejeitada. Fornecedor notificado."
+
+
+
+
+TELA 30: CONSULTA DE SALDO DE ESTOQUE ⭐⭐
+Rota: /estoque/consulta
+Acesso: Sidebar → Estoque → Consultar Estoque
+Estrutura:
+Cabeçalho:
+
+Título: "Consulta de Estoque"
+Subtítulo: "Visualização em tempo real do estoque por lote e validade"
+
+Filtros Avançados (colapsável):
+Linha 1:
+
+Busca Rápida (input grande)
+
+Placeholder: "Buscar por SKU, descrição, lote..."
+Busca em tempo real (debounce 300ms)
+Ícone de lupa
+
+
+Categoria (dropdown multi-select)
+
+Todas | Fresco | Seco | Congelado | Bebidas | Limpeza | etc.
+
+
+Local (tree select multi)
+
+Hierarquia: Armazém > Zona > Corredor > Prateleira
+Permite selecionar múltiplos níveis
+
+
+
+Linha 2:
+
+Status do Lote (dropdown multi-select)
+
+Todos | Disponível | Bloqueado | Quarentena | Restrito | Vencido
+
+
+Faixa de Validade (múltiplas opções - radio buttons)
+
+○ Todos
+○ Vencidos
+○ Vence em ≤ 7 dias
+○ Vence em ≤ 15 dias
+○ Vence em ≤ 30 dias
+○ Vence em ≤ 60 dias
+○ Vence em > 60 dias
+○ Customizado: De [date] até [date]
+
+
+Quantidade (range)
+
+Mínimo: [input]
+Máximo: [input]
+
+
+
+Linha 3:
+
+Fornecedor (dropdown searchable)
+
+Todos os fornecedores
+
+
+Tipo de Controle (checkbox)
+
+☐ Apenas com controle de lote
+☐ Apenas perecíveis
+
+
+Ordenar por: (dropdown)
+
+Validade (ascendente) - FEFO
+Validade (descendente)
+Quantidade (maior primeiro)
+Quantidade (menor primeiro)
+Produto (A-Z)
+Dias para vencer (menor primeiro)
+Data de entrada (mais antigo)
+Local
+
+
+
+Botões:
+
+"Limpar Filtros"
+"Salvar Filtro Atual" (para uso recorrente)
+"Exportar Resultado" (XLSX/CSV/PDF)
+
+
+Cards de KPIs (acima da tabela):
+Card 1: Valor Total em Estoque
+
+R$ [valor total calculado]
+% vs mês anterior
+
+Card 2: Total de Itens
+
+ itens únicos
+[Y] lotes distintos
+
+Card 3: Alertas Críticos
+
+🔴 [X] lotes vencidos
+🟠 [Y] lotes vencem em 7 dias
+Link: "Ver detalhes"
+
+Card 4: Ocupação
+
+[X]% de capacidade utilizada
+Barra de progresso visual
+Link: "Ver por local"
+
+
+Visualização (tabs):
+TAB 1: VISÃO POR LOTE (padrão)
+Tabela Principal:
+Colunas:
+
+Produto (fixo à esquerda, 250px)
+
+SKU (fonte mono, pequeno)
+Descrição (truncada com tooltip)
+Imagem thumbnail (opcional, hover)
+Categoria (badge pequeno)
+Clicável: abre detalhes do produto
+
+
+Lote (150px)
+
+Código do lote (fonte mono)
+Badge: tipo (Proposto | Real | Ajustado)
+Clicável: mostra histórico do lote
+
+
+Validade (120px)
+
+Data (DD/MM/AAAA)
+Dias para Vencer (destaque)
+
+Visual colorido:
+
+🔴 Vencido ou < 7 dias
+🟠 7-15 dias
+🟡 15-30 dias
+🟢 > 30 dias
+
+
+
+
+Ícone de alerta se crítico
+
+
+% Vida Útil (100px)
+
+Barra de progresso horizontal
+Número: [X]%
+Verde > 50% | Amarelo 20-50% | Vermelho < 20%
+
+
+Quantidade (100px)
+
+Número (grande)
+Unidade (pequeno)
+Alerta se abaixo do mínimo
+
+
+Local (200px)
+
+Armazém > Zona > Corredor > Prateleira
+Formato abreviado com tooltip completo
+Ícone indicando tipo (temperatura)
+Clicável: filtra por local
+
+
+Valor Unitário (100px)
+
+R$ [preço médio]
+Pequeno, formatado
+
+
+Valor Total (120px)
+
+R$ [qtd × preço]
+Destaque, negrito
+
+
+Status (100px)
+
+Badge grande:
+
+🟢 Disponível
+🔴 Bloqueado
+🟠 Quarentena
+🟡 Restrito
+⚫ Vencido
+
+
+Tooltip com motivo (se bloqueado)
+
+
+Data Entrada (100px)
+
+DD/MM/AAAA
+Tempo no estoque (hover): "Há X dias"
+
+
+Fornecedor (150px)
+
+Nome (truncado)
+Score visual (mini badge)
+Tooltip com nome completo
+
+
+Ações (100px, fixo à direita)
+
+Botão: "..." (dropdown)
+Menu:
+
+📋 Ver Detalhes
+🏷️ Imprimir Etiqueta
+📦 Transferir
+🔒 Bloquear/Desbloquear
+📊 Ver Movimentações
+⚠️ Registrar NC
+🗑️ Descartar
+
+
+
+
+
+Funcionalidades da Tabela:
+
+Seleção múltipla: Checkbox na primeira coluna
+
+Quando selecionados: barra de ações no topo
+
+"Imprimir Etiquetas" (múltiplas)
+"Transferir em Lote"
+"Exportar Selecionados"
+"Bloquear Selecionados"
+
+
+
+
+Ordenação: Clique em cabeçalhos
+Paginação: 25/50/100/Todos itens por página
+Totalizadores no rodapé:
+
+Total de Linhas: [X]
+Total Qtd: [soma]
+Valor Total: R$ [soma]
+
+
+Linha expansível: Click em linha mostra detalhes:
+
+Histórico de movimentações deste lote
+PO origem
+Recebimento vinculado
+NCs (se houver)
+Mini-gráfico de consumo
+
+
+
+Destaque Visual:
+
+Linha completa vermelha: se vencido
+Linha amarela: se vence em < 7 dias
+Linha cinza: se bloqueado/quarentena
+Animação sutil: piscar vermelho se vence hoje
+
+
+TAB 2: VISÃO CONSOLIDADA POR PRODUTO
+Tabela Agrupada:
+Colunas:
+
+Produto (SKU + Descrição)
+Qtd Total (soma de todos os lotes)
+Qtd Disponível (soma dos lotes disponíveis)
+Qtd Bloqueada (soma dos bloqueados)
+Qtd de Lotes (número)
+Lote Mais Antigo (validade do próximo a vencer)
+Dias p/ Próximo Vencimento (menor)
+Valor Total (R$)
+Ações
+
+Click em linha: Expande mostrando todos os lotes daquele produto (mesmo formato da Tab 1)
+
+TAB 3: VISÃO POR LOCAL
+Estrutura Hierárquica (Tree Table):
+
+📦 Armazém Central (expansível)
+
+Qtd Total: [X]
+Valor: R$ [Y]
+Ocupação: [Z]%
+❄️ Zona Fria (expansível)
+
+Qtd: [X]
+Valor: R$ [Y]
+Corredor A (expansível)
+
+Prateleira A1
+
+Tabela de lotes neste local (formato resumido)
+
+
+Prateleira A2
+
+
+Corredor B
+
+
+🌡️ Zona Seca
+🧊 Zona Congelados
+
+
+
+Botão por nível: "Ver Mapa do Local" (abre visualização gráfica se disponível)
+
+TAB 4: ALERTAS E VALIDADES
+Agrupado por faixa de validade:
+Card: 🔴 Vencidos ([X] lotes)
+
+Tabela dos vencidos
+Ação em lote: "Iniciar Descarte de Todos"
+
+Card: 🟠 Vence em ≤ 7 dias ([Y] lotes)
+
+Tabela
+Ação: "Criar Campanha de Escoamento"
+
+Card: 🟡 Vence em 8-15 dias ([Z] lotes)
+
+Tabela
+Ação: "Priorizar na Expedição"
+
+(continua com outras faixas)
+
+Modal: Detalhes do Lote (ao clicar em lote)
+Estrutura em abas:
+Aba 1: Informações Gerais
+
+Produto completo
+Lote
+Validade + dias restantes + % vida útil
+Quantidade atual
+Local detalhado
+Status
+Valor unitário e total
+Data de entrada
+Fornecedor com score
+
+Aba 2: Rastreabilidade
+
+PO Origem (link)
+RFQ Origem (se houver)
+RI Origem (se houver)
+Recebimento: data, responsável
+Lote Proposto vs Real (comparação)
+Validade Proposta vs Real (comparação)
+Datasheet/CoA (download)
+NCs associadas (se houver)
+Inspeções QA (se houver)
+
+Aba 3: Movimentações
+
+Histórico completo:
+
+Data/Hora | Tipo | Qtd | De > Para | Usuário | Motivo
+
+
+Saldo inicial vs atual
+Gráfico de linha: evolução da quantidade
+
+Aba 4: Restrições (se houver)
+
+Tipo de restrição
+Motivo
+Prazo da restrição
+Responsável
+Observações
+
+Botões no modal:
+
+Imprimir Etiqueta
+Transferir
+Bloquear/Desbloquear
+Ajustar Quantidade (inventário pontual)
+Fechar
+
+
+Ações Rápidas (botões flutuantes/fixos):
+Botão 1: "+ Ajuste Manual"
+
+Abre modal para registrar entrada/saída/ajuste manual
+
+Botão 2: "📊 Relatórios"
+
+Dropdown:
+
+Curva ABC
+Giro de Estoque
+Validade em Risco
+Ocupação por Local
+Valor por Categoria
+
+
+
+Botão 3: "🔔 Configurar Alertas"
+
+Abre tela de configuração de alertas personalizados
+
+
+Estado Vazio:
+
+Ilustração de caixa vazia
+"Nenhum item em estoque no momento"
+Ou "Nenhum resultado encontrado para os filtros aplicados"
+Botão: "Limpar Filtros" | "Cadastrar Primeiro Produto"
