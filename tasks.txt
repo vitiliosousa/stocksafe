@@ -1,634 +1,271 @@
-TELA 29: RECEBIMENTO FISCAL/FINANCEIRO
-Rota: /recebimento/fiscal/[id]
-Acesso:
-
-Lista de recebimentos pendentes de conferência fiscal
-Notificação para Financeiro após conferência física concluída
-
+TELA 31: HISTÓRICO DE MOVIMENTAÇÕES
+Rota: /estoque/movimentacoes
+Acesso: Sidebar → Estoque → Movimentações
 Estrutura:
 Cabeçalho:
 
-Breadcrumb: Home / Recebimento / Conferência Fiscal / Recebimento #[número]
-Título: "Conferência Fiscal - Recebimento #[número]"
-Badge: Status (Aguardando Conferência | Em Conferência | Aprovado | Divergente)
+Título: "Movimentações de Estoque"
+Subtítulo: "Histórico completo de entradas, saídas e transferências"
 
-Card: Dados do Recebimento
-Layout em 2 colunas:
-Coluna 1:
-
-Nº Recebimento: [número]
-PO Origem: #[número] (link)
-Fornecedor: [nome]
-Data Recebimento: [data]
-Status Conferência Física: [badge] (Concluída)
-
-Coluna 2:
-
-Valor do PO: R$ [valor]
-Qtd de Itens: [X]
-Recebidos: [Y] itens
-Divergências: [Z] itens
-Status Fiscal: [badge]
-
-Card: Dados da Nota Fiscal
-Formulário:
-
-**Número da Nota Fiscal *** (input text)
-
-Placeholder: "Ex: 12345"
-Validação: obrigatório, numérico
-Verifica duplicidade (alerta se já existe)
-
-
-Série da NF (input text)
-
-Placeholder: "Ex: 1"
-
-
-Chave de Acesso NF-e (input text)
-
-Placeholder: "44 dígitos"
-Máscara: XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX XXXX
-Validação: 44 dígitos, validação de DV
-
-
-**Tipo de NF *** (dropdown)
-
-NF-e (Nota Fiscal Eletrônica)
-NFS-e (Nota Fiscal de Serviço)
-Nota Fiscal Manual
-Outro
-
-
-**Data de Emissão *** (date picker)
-
-Validação: não pode ser futuro
-Alerta se > 7 dias da data do recebimento
-
-
-Data de Entrada (date picker)
-
-Default: data do recebimento
-Editável
-
-
-**CFOP *** (input text)
-
-Placeholder: "Ex: 5102"
-Validação: formato XXXX
-Autocomplete com CFOPs comuns
-
-
-Natureza da Operação (input text)
-
-Placeholder: "Ex: Venda de mercadoria"
-Autocomplete
-
-
-**Upload da NF *** (upload)
-
-PDF ou XML
-Tamanho máximo: 10MB
-Se XML: faz parse automático e preenche campos
-Preview do documento
-
-
-Upload do DANFE (upload opcional)
-
-PDF
-Preview
-
-
-
-Card: Comparação PO vs NF
-Tabela Comparativa de Valores:
-Colunas: Item | Valor PO | Valor NF | Divergência
-Linhas:
-
-Subtotal Produtos
-
-PO: R$ [valor calculado do PO]
-NF: [input] R$ (ou auto-preenchido se XML)
-Divergência: [diferença] (visual: verde se =, amarelo/vermelho se ≠)
-
-
-Desconto
-
-PO: R$ [desconto do PO]
-NF: [input] R$
-Divergência: [diferença]
-
-
-Frete
-
-PO: R$ [frete do PO]
-NF: [input] R$
-Divergência: [diferença]
-
-
-Seguro
-
-PO: R$ [valor]
-NF: [input] R$
-Divergência: [diferença]
-
-
-Outras Despesas
-
-PO: R$ [valor]
-NF: [input] R$
-Divergência: [diferença]
-
-
-IVA/ICMS
-
-PO: R$ [valor calculado]
-NF: [input] R$
-Divergência: [diferença]
-
-
-IPI
-
-PO: R$ [valor]
-NF: [input] R$
-Divergência: [diferença]
-
-
-PIS
-
-PO: R$ [valor]
-NF: [input] R$
-Divergência: [diferença]
-
-
-COFINS
-
-PO: R$ [valor]
-NF: [input] R$
-Divergência: [diferença]
-
-
-Outros Impostos
-
-PO: R$ [valor]
-NF: [input] R$
-Divergência: [diferença]
-
-
-TOTAL GERAL
-
-PO: R$ [total do PO] (destaque)
-NF: R$ [total da NF] (destaque)
-Divergência: R$ [diferença] (destaque grande)
-% de divergência
-
-
-
-Indicador Visual Grande:
-
-Se divergência = 0: ✅ "Valores Conferem"
-Se divergência > 0 e < 5%: ⚠️ "Divergência Pequena - Análise Necessária"
-Se divergência ≥ 5%: 🔴 "Divergência Significativa - Ação Obrigatória"
-
-Card: Itens da NF vs Recebimento
-Tabela:
-
-Colunas:
-
-Produto (SKU + Descrição)
-Qtd PO
-Qtd NF (input editável)
-Qtd Recebida (read-only, da conferência física)
-Preço Unit. PO
-Preço Unit. NF (input)
-Subtotal NF
-Conformidade (✅/⚠️/❌)
-
-
-Para cada linha:
-
-Validação: Qtd NF deve = Qtd Recebida (alerta se diferente)
-Validação: Preço NF deve = Preço PO (alerta se diferente)
-Se divergência: campo "Justificativa" (textarea)
-
-
-
-Card: Impostos Detalhados
-Para cada imposto (expansível):
-IVA/ICMS:
-
-Base de Cálculo: [input] R$
-Alíquota: [input] %
-Valor: [calculado] R$
-CST/CSOSN: [input]
-
-IPI:
-
-Base de Cálculo: [input] R$
-Alíquota: [input] %
-Valor: [calculado] R$
-
-PIS:
-
-Base de Cálculo: [input] R$
-Alíquota: [input] %
-Valor: [calculado] R$
-CST: [input]
-
-COFINS:
-
-Base de Cálculo: [input] R$
-Alíquota: [input] %
-Valor: [calculado] R$
-CST: [input]
-
-Botão: "Calcular Impostos Automaticamente" (se XML disponível)
-Card: Divergências e Justificativas
-Se houver divergências:
-Lista de Divergências Detectadas:
-
-Tipo | Descrição | Valor PO | Valor NF | Diferença
-Cada divergência tem:
-
-Campo: "Justificativa" * (textarea obrigatório)
-Dropdown: "Responsável pela Divergência" (Fornecedor | Transportadora | Erro Interno | Outro)
-Checkbox: "Notificar fornecedor sobre divergência"
-
-
-
-Card: Tratamento de Divergências
-Radio buttons:
-
-○ Aprovar NF com Divergências (requer aprovação superior)
-
-Campo: "Aprovador" * (dropdown de gerentes/diretores)
-Campo: "Justificativa da Aprovação" * (textarea)
-
-
-○ Solicitar Nota Fiscal Complementar ao Fornecedor
-
-Campo: "Valor da NF Complementar" (calculado automaticamente)
-Checkbox: "Enviar solicitação por email"
-
-
-○ Solicitar Nota Fiscal de Ajuste/Correção
-
-Campo: "Itens a ajustar" (checklist)
-Campo: "Observações para o fornecedor"
-
-
-○ Rejeitar NF e Bloquear Pagamento
-
-Campo: "Motivo da Rejeição" * (textarea)
-Checkbox: "Gerar processo de devolução"
-
-
-
-Card: GRN (Goods Receipt Note)
-Informações do GRN:
-
-Código GRN: GRN-[auto-gerado]
-Data de Geração: [auto]
-Responsável: [usuário logado]
-Status: (Pendente | Aprovado | Rejeitado)
-
-Observações do GRN:
-
-Textarea para notas gerais
-Checkbox: "Vincular ao processo de Contas a Pagar"
-Se marcado:
-
-Campo: "Condições de Pagamento" (do PO, editável)
-Campo: "Data de Vencimento" (calculada)
-Campo: "Centro de Custo" (dropdown)
-
-
-
-Card: Documentos Fiscais Adicionais
-Upload múltiplo:
-
-Comprovante de Retenção de Impostos
-Guia de Recolhimento
-Certificado de Origem
-Licença de Importação (se aplicável)
-Outros documentos
-
-Validações Globais:
-
-Número NF obrigatório e único
-Data de emissão obrigatória
-Upload da NF obrigatório
-Se divergências > 5%: justificativas obrigatórias
-Se divergências e aprovar: aprovador obrigatório
-
-Botões:
-Salvar Rascunho:
-
-Salva sem finalizar
-Status = em_conferencia
-Toast: "Rascunho salvo"
-
-Aprovar e Gerar GRN:
-
-Validação completa
-Se divergências significativas: exige aprovador
-Modal de confirmação:
-
-"Aprovar Conferência Fiscal?"
-Resumo: Total NF | Total PO | Divergência | Status
-Se divergências: lista resumida
-Checkbox: "Confirmo que revisei todos os valores" *
-
-
-Ao confirmar:
-
-POST /api/recebimentos/fiscal/aprovar
-Gera GRN definitivo com código único
-Atualiza status do recebimento = fiscal_aprovado
-Se sem divergências:
-
-Libera para pagamento imediatamente
-Cria título no Contas a Pagar (se integrado)
-
-
-Se com divergências e aprovado:
-
-Registra divergências no log
-Notifica aprovador
-Libera para pagamento (se aprovador concordou)
-Se solicitou NF complementar: cria pendência
-
-
-Vincula NF ao PO e Recebimento
-Atualiza histórico financeiro do fornecedor
-Gera PDF do GRN com:
-
-Todos os dados
-Comparativos
-Justificativas (se houver)
-Assinaturas digitais
-
-
-Toast: "GRN gerado! Código: GRN-[número]"
-Redireciona:
-
-"Ver GRN" (PDF)
-"Ir para Contas a Pagar" (se integrado)
-"Lista de Recebimentos"
-
-
-
-
-
-Rejeitar NF:
-
-Modal crítico:
-
-"⚠️ Rejeitar Nota Fiscal?"
-Alerta: "O pagamento será bloqueado e o fornecedor notificado"
-Campo: "Motivo Detalhado da Rejeição" * (textarea, min 100 caracteres)
-Checkbox: "Notificar fornecedor imediatamente" *
-Checkbox: "Bloquear futuras NFs deste fornecedor até regularização"
-
-
-Ao confirmar:
-
-Status = fiscal_rejeitado
-Bloqueia pagamento
-Notifica fornecedor com motivos
-Registra no scorecard (-10 pontos)
-Cria pendência no sistema
-Toast: "NF rejeitada. Fornecedor notificado."
-
-
-
-
-TELA 30: CONSULTA DE SALDO DE ESTOQUE ⭐⭐
-Rota: /estoque/consulta
-Acesso: Sidebar → Estoque → Consultar Estoque
-Estrutura:
-Cabeçalho:
-
-Título: "Consulta de Estoque"
-Subtítulo: "Visualização em tempo real do estoque por lote e validade"
-
-Filtros Avançados (colapsável):
+Filtros:
 Linha 1:
 
-Busca Rápida (input grande)
+Date Range (destaque)
 
-Placeholder: "Buscar por SKU, descrição, lote..."
-Busca em tempo real (debounce 300ms)
-Ícone de lupa
-
-
-Categoria (dropdown multi-select)
-
-Todas | Fresco | Seco | Congelado | Bebidas | Limpeza | etc.
+De: [date picker]
+Até: [date picker]
+Atalhos: Hoje | Últimos 7 dias | Últimos 30 dias | Este Mês | Mês Passado | Personalizado
 
 
-Local (tree select multi)
+Tipo de Movimentação (dropdown multi-select)
 
-Hierarquia: Armazém > Zona > Corredor > Prateleira
-Permite selecionar múltiplos níveis
+Todas
+📥 Entrada (Recebimento)
+📤 Saída (Expedição)
+🔄 Transferência Interna
+➕ Ajuste Positivo (Inventário)
+➖ Ajuste Negativo (Inventário)
+🗑️ Descarte
+↩️ Devolução ao Fornecedor
+🔙 Devolução de Cliente
 
 
 
 Linha 2:
 
-Status do Lote (dropdown multi-select)
+Produto (autocomplete searchable)
 
-Todos | Disponível | Bloqueado | Quarentena | Restrito | Vencido
-
-
-Faixa de Validade (múltiplas opções - radio buttons)
-
-○ Todos
-○ Vencidos
-○ Vence em ≤ 7 dias
-○ Vence em ≤ 15 dias
-○ Vence em ≤ 30 dias
-○ Vence em ≤ 60 dias
-○ Vence em > 60 dias
-○ Customizado: De [date] até [date]
+Busca por SKU ou descrição
+Permite múltiplos produtos
 
 
-Quantidade (range)
+Lote (input text)
 
-Mínimo: [input]
-Máximo: [input]
+Busca por código de lote
+
+
+Local (tree select)
+
+Origem OU Destino
+Hierarquia completa
 
 
 
 Linha 3:
 
-Fornecedor (dropdown searchable)
+Usuário (dropdown searchable)
 
-Todos os fornecedores
-
-
-Tipo de Controle (checkbox)
-
-☐ Apenas com controle de lote
-☐ Apenas perecíveis
+Todos os usuários
+Filtro: quem executou a movimentação
 
 
-Ordenar por: (dropdown)
+Status (dropdown)
 
-Validade (ascendente) - FEFO
-Validade (descendente)
-Quantidade (maior primeiro)
-Quantidade (menor primeiro)
-Produto (A-Z)
-Dias para vencer (menor primeiro)
-Data de entrada (mais antigo)
-Local
+Todos | Concluída | Pendente | Cancelada
+
+
+Motivo (dropdown)
+
+Todos | Venda | Transferência | Ajuste | Inventário | Devolução | Descarte | Outro
 
 
 
 Botões:
 
 "Limpar Filtros"
-"Salvar Filtro Atual" (para uso recorrente)
-"Exportar Resultado" (XLSX/CSV/PDF)
+"Exportar" (XLSX/CSV/PDF)
+"+ Registrar Movimentação Manual"
 
 
-Cards de KPIs (acima da tabela):
-Card 1: Valor Total em Estoque
+Cards de KPIs:
+Card 1: Total de Movimentações (período selecionado)
 
-R$ [valor total calculado]
-% vs mês anterior
+ movimentações
+Comparação vs período anterior: ▲ +15% ou ▼ -5%
 
-Card 2: Total de Itens
+Card 2: Entradas
 
- itens únicos
-[Y] lotes distintos
+📥 [X] movimentações
+Qtd Total: [Y] unidades
+Valor: R$ [Z]
 
-Card 3: Alertas Críticos
+Card 3: Saídas
 
-🔴 [X] lotes vencidos
-🟠 [Y] lotes vencem em 7 dias
-Link: "Ver detalhes"
+📤 [X] movimentações
+Qtd Total: [Y] unidades
+Valor: R$ [Z]
 
-Card 4: Ocupação
+Card 4: Saldo Líquido (período)
 
-[X]% de capacidade utilizada
-Barra de progresso visual
-Link: "Ver por local"
+Entradas - Saídas = [±X] unidades
+Visual: verde se positivo, vermelho se negativo
 
 
-Visualização (tabs):
-TAB 1: VISÃO POR LOTE (padrão)
+Gráficos (acima da tabela):
+Gráfico 1: Evolução Temporal (linha)
+
+Eixo X: Data
+Eixo Y: Quantidade
+2 linhas:
+
+Verde: Entradas
+Vermelho: Saídas
+
+
+Permite zoom/pan
+Tooltip com detalhes ao hover
+
+Gráfico 2: Distribuição por Tipo (pizza/donut)
+
+Fatias: cada tipo de movimentação
+% e valor absoluto
+Clicável: aplica filtro por tipo
+
+
 Tabela Principal:
 Colunas:
 
-Produto (fixo à esquerda, 250px)
+Data/Hora (140px)
 
-SKU (fonte mono, pequeno)
-Descrição (truncada com tooltip)
-Imagem thumbnail (opcional, hover)
-Categoria (badge pequeno)
-Clicável: abre detalhes do produto
+DD/MM/AAAA HH:MM
+Ordenação default: mais recente primeiro
+Agrupamento visual por dia (separador)
 
 
-Lote (150px)
+Tipo (120px)
 
-Código do lote (fonte mono)
-Badge: tipo (Proposto | Real | Ajustado)
-Clicável: mostra histórico do lote
+Ícone + texto:
 
-
-Validade (120px)
-
-Data (DD/MM/AAAA)
-Dias para Vencer (destaque)
-
-Visual colorido:
-
-🔴 Vencido ou < 7 dias
-🟠 7-15 dias
-🟡 15-30 dias
-🟢 > 30 dias
+📥 Entrada
+📤 Saída
+🔄 Transferência
+➕ Ajuste+
+➖ Ajuste-
+🗑️ Descarte
+↩️ Devolução Fornecedor
+🔙 Devolução Cliente
 
 
+Badge colorido por tipo
 
 
-Ícone de alerta se crítico
+Produto (250px)
+
+SKU (pequeno, mono)
+Descrição (truncada)
+Categoria (badge)
+Clicável: filtra por produto
 
 
-% Vida Útil (100px)
+Lote (120px)
 
-Barra de progresso horizontal
-Número: [X]%
-Verde > 50% | Amarelo 20-50% | Vermelho < 20%
+Código do lote (mono)
+Se não tem lote: "-" ou "N/A"
+
+
+Validade (100px)
+
+DD/MM/AAAA
+Se não tem: "-"
+Badge de alerta se próximo ao vencimento
 
 
 Quantidade (100px)
 
 Número (grande)
+Sinal: + para entradas, - para saídas
+Cores: verde (+) | vermelho (-)
 Unidade (pequeno)
-Alerta se abaixo do mínimo
 
 
-Local (200px)
+De > Para (250px)
 
-Armazém > Zona > Corredor > Prateleira
-Formato abreviado com tooltip completo
-Ícone indicando tipo (temperatura)
-Clicável: filtra por local
+Se Entrada:
+
+De: Fornecedor/Origem
+Para: [Local destino]
 
 
-Valor Unitário (100px)
+Se Saída:
 
-R$ [preço médio]
-Pequeno, formatado
+De: [Local origem]
+Para: Cliente/Destino
+
+
+Se Transferência:
+
+De: [Local A]
+Para: [Local B]
+
+
+Se Ajuste:
+
+De/Para: [Local]
+
+
+Visual: seta → entre origem e destino
+
+
+Motivo (150px)
+
+Texto curto
+Tooltip com motivo completo
+Exemplos: "Venda", "Inventário", "Ajuste por perda", "Transferência interna"
+
+
+Usuário (120px)
+
+Nome do usuário que executou
+Avatar pequeno
+Tooltip com cargo
+
+
+Documento (120px)
+
+Tipo e número:
+
+PO #12345
+Ordem #456
+INV #789
+Manual
+
+
+Link clicável para o documento
+
+
+Valor Unit. (100px)
+
+R$ [preço]
+Se aplicável
 
 
 Valor Total (120px)
 
 R$ [qtd × preço]
-Destaque, negrito
+Destacado
 
 
 Status (100px)
 
-Badge grande:
+Badge:
 
-🟢 Disponível
-🔴 Bloqueado
-🟠 Quarentena
-🟡 Restrito
-⚫ Vencido
-
-
-Tooltip com motivo (se bloqueado)
+✅ Concluída
+🔄 Em Andamento
+❌ Cancelada
+⏳ Pendente
 
 
-Data Entrada (100px)
-
-DD/MM/AAAA
-Tempo no estoque (hover): "Há X dias"
 
 
-Fornecedor (150px)
+Ações (80px)
 
-Nome (truncado)
-Score visual (mini badge)
-Tooltip com nome completo
-
-
-Ações (100px, fixo à direita)
-
-Botão: "..." (dropdown)
-Menu:
+Botão "..." (dropdown):
 
 📋 Ver Detalhes
-🏷️ Imprimir Etiqueta
-📦 Transferir
-🔒 Bloquear/Desbloquear
-📊 Ver Movimentações
-⚠️ Registrar NC
-🗑️ Descartar
+📄 Imprimir Comprovante
+↩️ Estornar (se permitido)
+📝 Adicionar Observação
+🗑️ Cancelar (se pendente)
 
 
 
@@ -636,190 +273,757 @@ Menu:
 
 Funcionalidades da Tabela:
 
-Seleção múltipla: Checkbox na primeira coluna
+Agrupamento: Por dia automaticamente
 
-Quando selecionados: barra de ações no topo
-
-"Imprimir Etiquetas" (múltiplas)
-"Transferir em Lote"
-"Exportar Selecionados"
-"Bloquear Selecionados"
+Subtotal por dia (qtd e valor)
 
 
+Ordenação: Por qualquer coluna
+Filtro inline: Em cada coluna (campo de busca no header)
+Paginação: 50/100/200/Todos
+Exportação: Seleção de colunas visíveis
+Totalização no rodapé:
 
-
-Ordenação: Clique em cabeçalhos
-Paginação: 25/50/100/Todos itens por página
-Totalizadores no rodapé:
-
-Total de Linhas: [X]
-Total Qtd: [soma]
-Valor Total: R$ [soma]
-
-
-Linha expansível: Click em linha mostra detalhes:
-
-Histórico de movimentações deste lote
-PO origem
-Recebimento vinculado
-NCs (se houver)
-Mini-gráfico de consumo
+Total de Movimentações: [X]
+Entradas: +[Y] | Saídas: -[Z]
+Saldo: [Y-Z]
+Valor Total Movimentado: R$ [W]
 
 
 
 Destaque Visual:
 
-Linha completa vermelha: se vencido
-Linha amarela: se vence em < 7 dias
-Linha cinza: se bloqueado/quarentena
-Animação sutil: piscar vermelho se vence hoje
+Linha verde clara: entradas/ajuste+
+Linha vermelha clara: saídas/ajuste-/descarte
+Linha azul clara: transferências
+Linha cinza: canceladas
 
 
-TAB 2: VISÃO CONSOLIDADA POR PRODUTO
-Tabela Agrupada:
-Colunas:
+Modal: Detalhes da Movimentação (ao clicar em linha)
+Estrutura:
+Card: Informações Gerais
 
-Produto (SKU + Descrição)
-Qtd Total (soma de todos os lotes)
-Qtd Disponível (soma dos lotes disponíveis)
-Qtd Bloqueada (soma dos bloqueados)
-Qtd de Lotes (número)
-Lote Mais Antigo (validade do próximo a vencer)
-Dias p/ Próximo Vencimento (menor)
-Valor Total (R$)
-Ações
+Código da Movimentação: MOV-[número]
+Tipo: [badge grande]
+Data/Hora: [timestamp completo]
+Status: [badge]
+Usuário Responsável: [nome + avatar + cargo]
 
-Click em linha: Expande mostrando todos os lotes daquele produto (mesmo formato da Tab 1)
+Card: Produto
 
-TAB 3: VISÃO POR LOCAL
-Estrutura Hierárquica (Tree Table):
+SKU + Descrição completa
+Imagem (se houver)
+Categoria
+Lote: [código]
+Validade: [data] ([X] dias para vencer)
 
-📦 Armazém Central (expansível)
+Card: Movimentação
 
-Qtd Total: [X]
-Valor: R$ [Y]
-Ocupação: [Z]%
-❄️ Zona Fria (expansível)
+Quantidade: [número grande] [unidade]
 
-Qtd: [X]
-Valor: R$ [Y]
-Corredor A (expansível)
-
-Prateleira A1
-
-Tabela de lotes neste local (formato resumido)
+Visual: sinal + ou - com cor
 
 
-Prateleira A2
+Origem:
+
+Tipo: Fornecedor/Local/Cliente/Outro
+Nome/Descrição completa
+Endereço (se aplicável)
 
 
-Corredor B
+Destino:
 
-
-🌡️ Zona Seca
-🧊 Zona Congelados
+Tipo: Local/Cliente/Outro
+Nome/Descrição completa
+Endereço (se aplicável)
 
 
 
-Botão por nível: "Ver Mapa do Local" (abre visualização gráfica se disponível)
+Card: Valores
 
-TAB 4: ALERTAS E VALIDADES
-Agrupado por faixa de validade:
-Card: 🔴 Vencidos ([X] lotes)
+Valor Unitário: R$ [X]
+Valor Total: R$ [Y]
+Custo Médio (se entrada): R$ [Z]
 
-Tabela dos vencidos
-Ação em lote: "Iniciar Descarte de Todos"
+Card: Rastreabilidade
 
-Card: 🟠 Vence em ≤ 7 dias ([Y] lotes)
+Documento Origem:
 
-Tabela
-Ação: "Criar Campanha de Escoamento"
-
-Card: 🟡 Vence em 8-15 dias ([Z] lotes)
-
-Tabela
-Ação: "Priorizar na Expedição"
-
-(continua com outras faixas)
-
-Modal: Detalhes do Lote (ao clicar em lote)
-Estrutura em abas:
-Aba 1: Informações Gerais
-
-Produto completo
-Lote
-Validade + dias restantes + % vida útil
-Quantidade atual
-Local detalhado
-Status
-Valor unitário e total
-Data de entrada
-Fornecedor com score
-
-Aba 2: Rastreabilidade
-
-PO Origem (link)
-RFQ Origem (se houver)
-RI Origem (se houver)
-Recebimento: data, responsável
-Lote Proposto vs Real (comparação)
-Validade Proposta vs Real (comparação)
-Datasheet/CoA (download)
-NCs associadas (se houver)
-Inspeções QA (se houver)
-
-Aba 3: Movimentações
-
-Histórico completo:
-
-Data/Hora | Tipo | Qtd | De > Para | Usuário | Motivo
+Tipo: PO/Ordem/Inventário/Manual
+Número: [link clicável]
+Data do documento
 
 
-Saldo inicial vs atual
-Gráfico de linha: evolução da quantidade
+Movimentação Anterior (deste lote):
 
-Aba 4: Restrições (se houver)
+Link para movimentação anterior
 
-Tipo de restrição
-Motivo
-Prazo da restrição
-Responsável
-Observações
 
-Botões no modal:
+Movimentação Seguinte (deste lote):
 
-Imprimir Etiqueta
-Transferir
-Bloquear/Desbloquear
-Ajustar Quantidade (inventário pontual)
+Link para próxima movimentação
+
+
+
+Card: Justificativa e Observações
+
+Motivo: [texto]
+Observações: [textarea]
+Anexos: [lista de arquivos] (se houver)
+
+Card: Impacto no Estoque
+
+Saldo Antes: [X] unidades
+Movimentação: [±Y] unidades
+Saldo Depois: [X±Y] unidades
+Local: [nome completo]
+
+Card: Auditoria
+
+Criado por: [usuário] em [data/hora]
+Modificado por: [usuário] em [data/hora] (se aplicável)
+Aprovado por: [usuário] em [data/hora] (se precisou aprovação)
+IP de origem: [IP]
+
+Botões no Modal:
+
+Imprimir Comprovante
+Estornar Movimentação (se permitido)
+
+Confirmação crítica
+Gera movimentação reversa
+
+
+Adicionar Observação
+Cancelar Movimentação (se pendente)
 Fechar
 
 
-Ações Rápidas (botões flutuantes/fixos):
-Botão 1: "+ Ajuste Manual"
+TELA 32: REGISTRAR MOVIMENTAÇÃO MANUAL
+Rota: /estoque/movimentacoes/nova
+Acesso:
 
-Abre modal para registrar entrada/saída/ajuste manual
+Botão "+ Registrar Movimentação Manual" na lista
+Atalho no dashboard
 
-Botão 2: "📊 Relatórios"
+Estrutura:
+Cabeçalho:
 
-Dropdown:
+Breadcrumb: Home / Estoque / Movimentações / Nova Movimentação
+Título: "Registrar Movimentação Manual"
+Subtítulo: "Use esta tela para ajustes, correções e movimentações não automáticas"
 
-Curva ABC
-Giro de Estoque
-Validade em Risco
-Ocupação por Local
-Valor por Categoria
+Card: Tipo de Movimentação
+Radio buttons grandes (visual destacado):
+Opção 1: 📥 Entrada Manual
+
+Descrição: "Adicionar produtos ao estoque (compra direta, doação, etc.)"
+Casos de uso: "Compra sem PO, doação, encontrado, produção interna"
+
+Opção 2: 📤 Saída Manual
+
+Descrição: "Remover produtos do estoque (venda direta, uso interno, etc.)"
+Casos de uso: "Venda sem ordem, uso interno, amostra grátis, consumo"
+
+Opção 3: 🔄 Transferência Interna
+
+Descrição: "Mover produtos entre locais (sem entrada/saída do estoque)"
+Casos de uso: "Reorganização, reposição entre zonas"
+
+Opção 4: ➕ Ajuste Positivo
+
+Descrição: "Correção de estoque para mais (inventário encontrou mais)"
+Casos de uso: "Inventário, erro de lançamento anterior"
+
+Opção 5: ➖ Ajuste Negativo
+
+Descrição: "Correção de estoque para menos (perda, quebra, roubo)"
+Casos de uso: "Inventário, perda, quebra, vencimento, avaria"
+
+Opção 6: 🗑️ Descarte
+
+Descrição: "Descarte de produtos (vencimento, avaria, contaminação)"
+Casos de uso: "Vencido, avariado, contaminado, recall"
+Nota: "Requer aprovação e laudo"
+
+Opção 7: ↩️ Devolução ao Fornecedor
+
+Descrição: "Devolução de produtos já recebidos"
+Casos de uso: "NC, recall, acordo comercial"
+
+Card: Dados do Produto
+Campos:
+
+**Produto *** (autocomplete searchable grande)
+
+Busca por SKU ou descrição
+Mostra: Thumbnail | SKU | Descrição | Categoria | Estoque Atual
+Ao selecionar:
+
+Preenche informações do produto (read-only):
+
+Categoria
+Unidade de medida
+Vida útil (se cadastrada)
+Controle por lote? (Sim/Não)
+
+
+Se tem controle de lote: campos Lote/Validade tornam-se obrigatórios
 
 
 
-Botão 3: "🔔 Configurar Alertas"
 
-Abre tela de configuração de alertas personalizados
+**Quantidade *** (input number grande)
+
+Placeholder: "Ex: 100"
+Validação:
+
+Obrigatório
+Deve ser > 0
+Se SAÍDA ou AJUSTE-: não pode exceder estoque disponível no local selecionado
 
 
-Estado Vazio:
+Sufixo: [unidade] (auto-preenchido)
+Helper: "Estoque atual: [X] unidades" (se saída/ajuste-)
 
-Ilustração de caixa vazia
-"Nenhum item em estoque no momento"
-Ou "Nenhum resultado encontrado para os filtros aplicados"
-Botão: "Limpar Filtros" | "Cadastrar Primeiro Produto"
+
+Lote (condicional - obrigatório se produto tem controle)
+
+Se ENTRADA/AJUSTE+:
+
+Input text: "Digite o lote"
+Permite criar novo lote
+
+
+Se SAÍDA/AJUSTE-/TRANSFERÊNCIA:
+
+Dropdown searchable: lista lotes disponíveis deste produto
+Mostra: Lote | Validade | Qtd Disponível | Local
+Validação: qtd não pode exceder disponível no lote
+
+
+Placeholder: "Ex: L2025-001"
+
+
+Validade (condicional - obrigatório se produto tem controle)
+
+Se ENTRADA/AJUSTE+:
+
+Date picker: "Data de vencimento"
+Validação: deve ser futura
+Calcula e mostra: dias até vencer, % vida útil
+Alerta se < validade mínima aceitável
+
+
+Se SAÍDA/AJUSTE-/TRANSFERÊNCIA:
+
+Read-only (vem do lote selecionado)
+
+
+
+
+
+Card: Origem e Destino (varia conforme tipo)
+Se ENTRADA:
+
+**Origem *** (radio buttons):
+
+○ Fornecedor
+
+Dropdown: selecionar fornecedor cadastrado
+
+
+○ Outro (especificar)
+
+Input text: "Descrever origem"
+
+
+
+
+**Local de Destino *** (tree select)
+
+Hierarquia completa de locais
+Valida se local aceita categoria do produto
+
+
+
+Se SAÍDA:
+
+**Local de Origem *** (tree select ou autocomplete)
+
+Filtra por locais que têm este produto/lote
+Mostra qtd disponível em cada local
+
+
+**Destino *** (radio buttons):
+
+○ Cliente
+
+Input text: "Nome do cliente"
+
+
+○ Uso Interno
+
+Dropdown: Departamento/Área
+
+
+○ Outro (especificar)
+
+Input text
+
+
+
+
+
+Se TRANSFERÊNCIA:
+
+**Local de Origem *** (tree select)
+
+Filtra por locais que têm este produto/lote
+Mostra qtd disponível
+
+
+**Local de Destino *** (tree select)
+
+Não pode ser igual à origem (validação)
+Valida condições de armazenagem (temperatura, etc.)
+Alerta se produto requer condições que destino não tem
+
+
+
+Se AJUSTE+ ou AJUSTE-:
+
+**Local *** (tree select)
+
+Local afetado pelo ajuste
+Se AJUSTE-: mostra qtd atual disponível
+
+
+
+Se DESCARTE:
+
+**Local de Origem *** (tree select)
+
+Local onde está o produto a descartar
+
+
+Destino: Descarte (fixo)
+
+Se DEVOLUÇÃO:
+
+**Local de Origem *** (tree select)
+**Fornecedor Destino *** (dropdown)
+
+Preferencialmente o fornecedor original (sugere)
+
+
+
+Card: Motivo e Justificativa
+Campos:
+
+**Motivo *** (dropdown - opções variam conforme tipo)
+
+Se ENTRADA:
+
+Compra Direta (sem PO)
+Doação
+Produção Interna
+Transferência de Outra Unidade
+Devolução de Cliente
+Outro
+
+
+Se SAÍDA:
+
+Venda Direta
+Uso Interno/Consumo
+Amostra Grátis
+Bonificação
+Transferência para Outra Unidade
+Outro
+
+
+Se AJUSTE:
+
+Inventário (sobra/falta)
+Correção de Erro de Lançamento
+Perda/Quebra
+Roubo/Furto
+Vencimento
+Avaria/Dano
+Outro
+
+
+Se DESCARTE:
+
+Vencimento
+Avaria/Contaminação
+Recall
+Qualidade Comprometida
+Regulatório
+Outro
+
+
+Se TRANSFERÊNCIA:
+
+Reposição
+Reorganização
+Otimização de Espaço
+Consolidação
+Outro
+
+
+Se DEVOLUÇÃO:
+
+Não Conformidade
+Recall
+Acordo Comercial
+Produto Errado
+Outro
+
+
+
+
+**Justificativa Detalhada *** (textarea grande)
+
+Placeholder: "Descreva em detalhes o motivo desta movimentação..."
+Validação:
+
+Obrigatório
+Mínimo: 20 caracteres
+Recomendado: ser específico e claro
+
+
+Contador de caracteres
+Helper: "Esta informação será auditada. Seja claro e preciso."
+
+
+Documento de Referência (opcional)
+
+Input text
+Placeholder: "Ex: NF 12345, Email, Ordem Interna, etc."
+Upload de documento (opcional)
+
+
+Observações Adicionais (textarea)
+
+Opcional
+Placeholder: "Informações complementares..."
+
+
+
+Card: Valores (opcional mas recomendado)
+Campos:
+
+Valor Unitário (input number decimal)
+
+Placeholder: "R$ 0,00"
+Formatação monetária
+Opcional para AJUSTES
+Obrigatório para ENTRADA
+
+
+Valor Total (calculado)
+
+Qtd × Valor Unitário
+Read-only
+Formatado: R$ [valor]
+
+
+
+Card: Aprovação (se necessário)
+Condicional - aparece se:
+
+Ajuste > valor limite (ex: R$ 1.000)
+Descarte
+Devolução
+Saída sem documento
+
+Campos:
+
+Requer Aprovação de: (dropdown)
+
+Lista de aprovadores (gerentes/diretores)
+Multi-select se múltiplas aprovações
+
+
+Enviar para Aprovação: (checkbox)
+
+Envia notificação imediata
+
+
+Status: "Aguardando Aprovação" (badge)
+
+Card: Anexos
+
+Upload múltiplo:
+
+Fotos (se avaria/descarte)
+Documentos (NF, emails, aprovações)
+Laudos (se descarte)
+Outros
+
+
+Recomendado para: Ajustes, Descartes, Devoluções
+
+Validações Globais:
+
+Tipo obrigatório
+Produto obrigatório
+Quantidade obrigatória e > 0
+Se produto tem controle: Lote e Validade obrigatórios
+Origem/Destino conforme tipo
+Motivo obrigatório
+Justificativa com mínimo 20 caracteres
+Se SAÍDA/AJUSTE-: qtd ≤ disponível
+Se TRANSFERÊNCIA: origem ≠ destino
+Se DESCARTE: anexo de foto/laudo recomendado
+
+Botões:
+Cancelar:
+
+Confirmação se houver dados preenchidos
+Volta para lista
+
+Salvar Rascunho:
+
+Salva sem executar
+Status = rascunho
+Permite retomar depois
+Toast: "Rascunho salvo"
+
+Registrar Movimentação:
+
+Validação completa
+Se requer aprovação:
+
+Modal: "Esta movimentação requer aprovação"
+Lista aprovadores
+Checkbox: "Confirmo que as informações estão corretas"
+Botão: "Enviar para Aprovação"
+Ações:
+
+Salva com status = aguardando_aprovacao
+Notifica aprovadores
+Toast: "Enviado para aprovação de [Nome]"
+Redireciona para lista (mostra status pendente)
+
+
+
+
+Se não requer aprovação:
+
+Modal de confirmação:
+
+"Confirmar Movimentação?"
+Resumo: Tipo | Produto | Qtd | Lote | De > Para | Motivo
+Alerta (se crítico): "Esta ação afetará o estoque imediatamente"
+Checkbox: "Confirmo que revisei todos os dados" *
+Botão: "Confirmar"
+
+
+Ao confirmar:
+
+POST /api/movimentacoes/manual
+Cria registro de Movimentacao
+Se ENTRADA/AJUSTE+:
+
+Cria ou atualiza LoteEstoque
+Adiciona quantidade
+
+
+Se SAÍDA/AJUSTE-:
+
+Diminui quantidade do LoteEstoque
+Se qtd=0: remove ou marca como vazio
+
+
+Se TRANSFERÊNCIA:
+
+Diminui qtd do local origem
+Aumenta qtd do local destino
+Mantém mesmo lote/validade
+
+
+Se DESCARTE:
+
+Remove quantidade
+Registra em log de descartes
+Gera laudo (se configurado)
+
+
+Se DEVOLUÇÃO:
+
+Remove quantidade
+Cria registro de devolução ao fornecedor
+Impacta scorecard (leve)
+
+
+Registra log de auditoria detalhado
+Atualiza saldos em tempo real
+Gera comprovante de movimentação (PDF)
+Toast: "Movimentação registrada! Código: MOV-[número]"
+Redireciona:
+
+"Ver Comprovante" (PDF)
+"Imprimir Etiqueta" (se entrada com novo lote)
+"Nova Movimentação" | "Voltar à Lista"
+
+
+
+
+
+
+
+
+TELA 33: TRANSFERÊNCIA ENTRE LOCAIS
+Rota: /estoque/transferencias
+Acesso: Sidebar → Estoque → Transferências
+Estrutura:
+Cabeçalho:
+
+Título: "Transferências de Estoque"
+Subtítulo: "Movimentação de produtos entre locais"
+Botão: "+ Nova Transferência"
+
+Filtros:
+
+Date Range: período
+Produto: autocomplete
+Lote: input text
+Local Origem: tree select
+Local Destino: tree select
+Status: Todos | Pendente | Em Trânsito | Concluída | Cancelada
+Usuário Solicitante
+Botões: Limpar | Exportar
+
+Cards de KPIs:
+
+Transferências Pendentes ([X])
+Em Trânsito ([Y])
+Concluídas Hoje ([Z])
+Valor em Trânsito (R$)
+
+Tabela:
+
+Colunas:
+
+Código (TRANS-[número])
+Data/Hora Solicitação
+Produto (SKU + Descrição)
+Lote
+Qtd
+De (Local Origem)
+Para (Local Destino)
+Solicitante
+Status (badge: Pendente | Em Trânsito | Concluída | Cancelada)
+Ações (Ver | Confirmar Recebimento | Cancelar)
+
+
+Ordenação, paginação
+Linha destaca: pendentes há > 24h em amarelo
+
+Modal: Nova Transferência
+Opção 1: Transferência Simples (1 produto)
+Campos:
+
+Produto * (autocomplete)
+Lote * (dropdown dos lotes disponíveis deste produto)
+
+Mostra: Lote | Validade | Qtd Disponível | Local Atual
+
+
+Quantidade * (input number)
+
+Validação: ≤ disponível no lote
+Sufixo: [unidade]
+
+
+Local Origem * (tree select)
+
+Pré-preenche com local do lote (editável)
+
+
+Local Destino * (tree select)
+
+Validação: ≠ origem
+Alerta se condições incompatíveis
+
+
+Motivo * (dropdown):
+
+Reposição
+Reorganização
+Otimização
+Consolidação
+Pedido Interno
+Outro
+
+
+Observações (textarea)
+Prioridade (radio): Normal | Alta | Urgente
+
+Opção 2: Transferência em Lote (múltiplos produtos)
+
+Tabela para adicionar múltiplos itens
+Colunas: Produto | Lote | Qtd | De | Para | Remover
+Botão: "+ Adicionar Item"
+Todos os itens compartilham:
+
+Motivo
+Observações
+Prioridade
+
+
+
+Botões:
+
+Salvar Rascunho
+Solicitar Transferência
+
+Valida tudo
+Cria registro com status=pendente
+Notifica responsável do local origem
+Toast: "Transferência solicitada! Código: TRANS-[número]"
+
+
+
+Modal: Confirmar Recebimento de Transferência
+Acesso: Botão "Confirmar Recebimento" na lista (só aparece se status=em_transito)
+Campos:
+
+Transferência: TRANS-[número] (read-only)
+Produto, Lote, Qtd Esperada (read-only)
+Local Destino (read-only)
+Qtd Recebida * (input number)
+
+Default: qtd esperada
+Permite divergência (registra)
+
+
+Condições do Recebimento (radio):
+
+● Conforme (sem avarias)
+○ Com Avarias Leves
+○ Com Avarias Graves
+
+
+Se avarias: Textarea "Descrever avarias"
+Upload de fotos (opcional)
+Observações do Recebimento
+
+Botões:
+
+Confirmar Recebimento
+
+Valida
+Atualiza estoque:
+
+Diminui origem
+Aumenta destino
+
+
+Status = concluída
+Registra data/hora real
+Se divergência: registra NC leve
+Toast: "Transferência concluída!"

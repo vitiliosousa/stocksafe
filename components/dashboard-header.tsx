@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import Image from "next/image"
+import logo from "@/public/logo.svg"
 
 interface DashboardHeaderProps {
   user: {
@@ -43,10 +45,10 @@ export function DashboardHeader({ user, onToggleSidebar }: DashboardHeaderProps)
         <div className="flex items-center gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="bg-emerald-500 p-1.5 rounded-lg">
-              <Package className="w-6 h-6 text-white" />
+            <div className="p-1.5 rounded-lg">
+              <Image src={logo} alt="StockSafe Logo" className="w-6 h-6" />
             </div>
-            <span className="text-xl font-bold text-emerald-600">StockSafe</span>
+            <h3 className="text-xl font-bold"> <span className="text-blue-500">Stock</span><span className="text-emerald-500">Safe</span></h3>
           </div>
 
           {/* Hamburger Menu */}
