@@ -1,271 +1,841 @@
-TELA 31: HISTÓRICO DE MOVIMENTAÇÕES
-Rota: /estoque/movimentacoes
-Acesso: Sidebar → Estoque → Movimentações
+TELA 48: POLÍTICAS DE VALIDADE
+Rota: /admin/politicas
+Acesso: Sidebar → Admin → Políticas de Validade
 Estrutura:
 Cabeçalho:
 
-Título: "Movimentações de Estoque"
-Subtítulo: "Histórico completo de entradas, saídas e transferências"
+Título: "Políticas de Validade"
+Subtítulo: "Regras de validade mínima por categoria de produto"
+Botão: "+ Nova Política"
 
-Filtros:
+Banner Informativo:
+
+Ícone: ℹ️
+Texto: "Estas políticas definem os requisitos mínimos de validade para recebimento e expedição de produtos"
+
+Tabela:
+Colunas:
+
+Categoria (200px)
+
+Nome da categoria
+Qtd de produtos: [X]
+
+
+Vida Útil Padrão (120px)
+
+ dias
+Usado como referência
+
+
+Mínimo na Entrada (180px)
+
+Formato: [Y] dias OU [Z]% da vida útil
+Destaque: badge verde
+
+
+Mínimo para Expedição (180px)
+
+Formato: [W] dias
+Destaque: badge amarelo
+
+
+Política de Saída (150px)
+
+Badge: FEFO | FIFO | LIFO
+Padrão: FEFO
+
+
+Horizonte de Alerta (150px)
+
+Lista de dias configurados
+Ex: "7, 15, 30 dias"
+
+
+Status (100px)
+
+Toggle: Ativa | Inativa
+
+
+Ações (100px)
+
+Botão: "Editar"
+Menu "...":
+
+Ver Produtos Afetados
+Duplicar
+Desativar
+Excluir
+
+
+
+
+
+Funcionalidades:
+
+Ordenação por categoria
+Busca por categoria
+Exemplos pré-carregados:
+
+Frescos: 70% vida útil mínima, FEFO
+Congelados: 50% vida útil mínima, FEFO
+Secos: 180 dias mínimos, FEFO
+Bebidas: 90 dias mínimos, FEFO
+
+
+
+
+Modal: Nova/Editar Política
+Formulário:
+
+**Categoria *** (dropdown)
+
+Lista de categorias cadastradas
+Permite criar nova (inline)
+
+
+Vida Útil Padrão (input number)
+
+ dias
+Opcional (referência)
+Helper: "Vida útil típica dos produtos desta categoria"
+
+
+**Validade Mínima na Entrada *** (obrigatório)
+
+Radio buttons:
+
+○ Por percentual:
+
+Input: [X]% da vida útil
+Slider: 0-100%
+Exemplo calculado: "Se vida útil = 30 dias, aceita com ≥ [Y] dias"
+
+
+○ Por dias absolutos:
+
+Input: [X] dias
+Exemplo: "Aceita produtos com no mínimo [X] dias até vencer"
+
+
+
+
+
+
+Validade Mínima para Expedição (input number)
+
+ dias
+Validação: ≤ Validade Mínima na Entrada
+Helper: "Bloqueia expedição se validade < este valor"
+
+
+**Política de Expedição *** (radio buttons)
+
+● FEFO (First-Expire-First-Out) - RECOMENDADO
+○ FIFO (First-In-First-Out)
+○ LIFO (Last-In-First-Out)
+Helper text explicando cada política
+
+
+Horizontes de Alerta (checkboxes múltiplos + custom)
+
+☐ 7 dias
+☐ 15 dias
+☐ 30 dias
+☐ 60 dias
+☐ 90 dias
+Input: "Outro: ___ dias"
+Helper: "Sistema enviará alertas quando produtos atingirem estes prazos"
+
+
+Ações Automáticas (checkboxes)
+
+☐ Bloquear recebimento se validade < mínimo
+☐ Bloquear expedição se validade < mínimo expedição
+☐ Enviar alerta automático para Compras
+☐ Sugerir campanha de escoamento automaticamente
+
+
+Observações (textarea)
+
+Justificativas, regulamentações aplicáveis
+
+
+
+Preview Visual:
+
+Linha do tempo mostrando:
+
+Zona de rejeição (vermelho)
+Zona de alerta (amarelo)
+Zona de aceitação (verde)
+Marcadores de dias de alerta
+
+
+
+Validações:
+
+Categoria obrigatória e única
+Validade mínima entrada obrigatória
+Validade expedição ≤ entrada
+Pelo menos 1 horizonte de alerta
+
+Botões:
+
+Cancelar
+Salvar Política
+
+POST/PUT /api/politicas-validade
+Aplica a todos os produtos da categoria
+Toast: "Política salva e aplicada a [X] produtos"
+
+
+
+
+TELA 49: PADRÕES DE CÓDIGOS E ETIQUETAS
+Rota: /admin/etiquetas
+Acesso: Sidebar → Admin → Padrões de Etiquetas
+Estrutura:
+Cabeçalho:
+
+Título: "Padrões de Códigos e Etiquetas"
+Subtítulo: "Configuração de layouts e formatos de etiquetas"
+
+Tabs:
+
+Tab 1: Etiquetas Provisórias
+Tab 2: Etiquetas de Lote Real
+Tab 3: Etiquetas de Localização
+Tab 4: Códigos de Barras
+
+
+TAB 1: ETIQUETAS PROVISÓRIAS
+Card: Configuração Geral
+Campos:
+
+**Tipo de Código *** (radio buttons)
+
+○ Código de Barras (1D - Code 128)
+○ QR Code (2D)
+○ Ambos (um de cada)
+
+
+**Tamanho da Etiqueta *** (dropdown)
+
+50×25 mm (padrão "papelinho")
+75×30 mm
+100×50 mm
+Personalizado: [Largura] × [Altura] mm
+
+
+Orientação (radio)
+
+○ Paisagem (horizontal)
+○ Retrato (vertical)
+
+
+Impressora Padrão (dropdown)
+
+Lista de impressoras cadastradas
+Permite adicionar nova
+
+
+Quantidade de Cópias Padrão (input number)
+
+Default: 2
+Helper: "Número de etiquetas por item"
+
+
+
+Card: Conteúdo da Etiqueta
+Checkboxes (o que incluir):
+
+☑ Logo StockSafe (obrigatório)
+☑ Título "Etiqueta Provisória"
+☑ Número do PO
+☑ Número da Linha
+☑ SKU do Produto
+☑ Descrição do Produto
+☑ Fornecedor
+☑ Lote Proposto (destaque)
+☑ Validade Proposta (destaque)
+☑ Quantidade Prevista
+☑ Unidade de Medida
+☑ Data de Emissão
+☑ Código de Barras/QR (obrigatório)
+
+Card: Formato do Código
+Especificações GS1-128/QR:
+
+AI (01): GTIN/SKU
+AI (10): Lote Proposto
+AI (17): Validade Proposta (formato AAMMDD)
+Dados Adicionais:
+
+PO_ID: [numérico]
+Item_ID: [numérico]
+
+
+Exemplo de código gerado:
+
+(01)07891234567890(10)L2025001(17)251231PO12345LN001
+
+
+
+Card: Preview
+
+Visualização em tempo real da etiqueta
+Atualiza conforme configurações
+Botão: "Imprimir Teste"
+
+Botão: Salvar Configurações
+
+TAB 2: ETIQUETAS DE LOTE REAL
+Estrutura similar à Tab 1:
+Diferenças:
+
+Título: "Etiqueta de Lote Real"
+Conteúdo:
+
+☑ Produto (SKU + Descrição)
+☑ Lote Real
+☑ Validade Real
+☑ Quantidade
+☑ Local de Armazenagem
+☑ Data de Recebimento
+☑ Fornecedor
+☑ Código de Barras/QR
+
+
+Tamanhos maiores disponíveis (etiqueta permanente)
+Material sugerido: Adesivo resistente
+
+
+TAB 3: ETIQUETAS DE LOCALIZAÇÃO
+Card: Configuração
+Campos:
+
+Formato do Código de Localização:
+
+Padrão: [ARM][ZN][COR][PRAT][POS]
+Exemplo: A01-ZF-CA-P01-001
+Permite customizar separadores
+
+
+Tipo de Código: Código de Barras | QR Code
+Tamanho: Maior (100×50 mm ou maior)
+Conteúdo:
+
+☑ Código completo (legível)
+☑ Hierarquia (Armazém > Zona > Corredor > Prateleira)
+☑ Condições (Temperatura, Umidade)
+☑ Capacidade Máxima
+☑ Código de Barras/QR (grande)
+
+
+
+Preview e Impressão em Lote:
+
+Permite gerar etiquetas para múltiplos locais
+Seleção em árvore hierárquica
+Botão: "Gerar [X] Etiquetas"
+
+
+TAB 4: CÓDIGOS DE BARRAS
+Card: Padrões Globais
+Campos:
+
+**Padrão de Códigos de Barras 1D *** (dropdown)
+
+Code 128 (recomendado)
+Code 39
+EAN-13
+UPC-A
+
+
+Tamanho do Código de Barras (slider)
+
+Largura: [X] mm
+Altura: [Y] mm
+Mostrar número legível: (checkbox)
+
+
+Padrão de QR Code (dropdown)
+
+QR Code Padrão
+Data Matrix
+Nível de Correção de Erro: L | M | Q | H
+
+
+Prefixo de Identificação (input)
+
+Código da empresa/sistema
+Ex: "SS" (StockSafe)
+Usado em códigos gerados
+
+
+
+Card: Validações
+
+Checkbox: "Validar formato GS1-128"
+Checkbox: "Verificar dígito verificador"
+Checkbox: "Permitir códigos customizados"
+
+Card: Integração com Leitores
+
+Lista de leitores/scanners cadastrados
+Configurações de comunicação
+Teste de leitura (botão)
+
+Botão: Salvar Configurações
+
+TELA 50: CONFIGURAÇÃO DE WORKFLOWS
+Rota: /admin/workflows
+Acesso: Sidebar → Admin → Workflows
+Estrutura:
+Cabeçalho:
+
+Título: "Configuração de Workflows e Aprovações"
+Subtítulo: "Regras de aprovação para operações críticas"
+
+Tabs:
+
+Tab 1: Aprovações de Compras
+Tab 2: Aprovações de Recebimento
+Tab 3: Aprovações de Ajustes
+Tab 4: Aprovações de Descarte
+
+
+TAB 1: APROVAÇÕES DE COMPRAS
+Tabela de Regras:
+Colunas:
+
+Regra (nome)
+Condição (ex: "Valor > R$ 10.000")
+Aprovador Nível 1
+Aprovador Nível 2 (se aplicável)
+Aprovador Nível 3 (se aplicável)
+Status (Ativa | Inativa)
+Ações (Editar | Desativar | Excluir)
+
+Botão: "+ Nova Regra"
+Modal: Nova Regra de Aprovação
+Formulário:
+
+**Nome da Regra *** (input text)
+
+Ex: "Compras acima de R$ 10.000"
+
+
+**Tipo de Operação *** (dropdown)
+
+Requisição Interna
+RFQ
+Pedido de Compra
+Faturação de PO
+
+
+Condições *** (múltiplas, tipo "query builder")
+
+Operador: E | OU
+Campos disponíveis:
+
+Valor Total (≥ | ≤ | = | ≠)
+Quantidade de Itens (≥ | ≤)
+Fornecedor (é | não é | está em lista)
+Categoria de Produto (é | contém)
+Solicitante/Comprador (é | não é)
+
+
+Botão: "+ Adicionar Condição"
+Exemplo:
+
+Valor Total ≥ R$ 10.000 E Categoria = "Frescos"
+
+
+
+
+Níveis de Aprovação *** (mínimo 1)
+
+Nível 1:
+
+Dropdown: Aprovador (usuário ou grupo)
+Prazo para Aprovar: [X] horas/dias
+Ação se vencer prazo:
+
+Escalar para Nível 2
+Aprovar Automaticamente
+Rejeitar Automaticamente
+Enviar Alerta
+
+
+
+
+Nível 2 (opcional):
+
+Mesmos campos
+Só é acionado se Nível 1 aprovar (ou escalar)
+
+
+Nível 3 (opcional):
+
+Para valores muito altos ou situações críticas
+
+
+Botão: "+ Adicionar Nível"
+
+
+Notificações (checkboxes)
+
+☐ Notificar solicitante quando aprovado
+☐ Notificar solicitante quando rejeitado
+☐ Enviar lembretes ao aprovador (frequência)
+☐ Notificar gerência em caso de rejeição
+
+
+Exceções (opcional)
+
+Usuários que podem bypassar esta aprovação
+Situações de exceção (emergência, etc.)
+
+
+
+Validações:
+
+Nome único
+Pelo menos 1 condição
+Pelo menos 1 nível de aprovação
+Aprovadores diferentes por nível
+
+Botões:
+
+Cancelar
+Salvar Regra
+
+Ativa imediatamente
+Aplica a operações futuras
+
+
+
+
+TAB 2: APROVAÇÕES DE RECEBIMENTO
+Similar à Tab 1, mas focado em:
+
+Desvios de Lote/Validade
+Aceite com Desvio
+Rejeições
+Não Conformidades
+
+Exemplos de Regras:
+
+"Desvio de validade > 10% requer aprovação QA"
+"Rejeição > R$ 5.000 requer aprovação Gerência"
+"Aceite com desvio sempre requer aprovação"
+
+
+TAB 3: APROVAÇÕES DE AJUSTES
+Focado em:
+
+Ajustes de Inventário
+
+RetryVSContinueTAB 3: APROVAÇÕES DE AJUSTES (continuação)
+Focado em:
+
+Ajustes de Inventário
+Movimentações Manuais
+Correções de Estoque
+
+Exemplos de Regras:
+
+"Ajuste > R$ 1.000 requer aprovação Gerente"
+"Ajuste negativo > 20% do saldo requer 2 aprovações"
+"Movimentação manual sempre requer aprovação"
+"Correção de lote/validade requer aprovação QA"
+
+Campos específicos:
+
+Tipo de Ajuste: Positivo | Negativo | Ambos
+% de Divergência (se inventário)
+Valor monetário
+Categoria de produto
+Local
+
+
+TAB 4: APROVAÇÕES DE DESCARTE
+Focado em:
+
+Descartes por vencimento
+Descartes por avaria
+Descartes especiais
+
+Exemplos de Regras:
+
+"Descarte > R$ 500 requer aprovação"
+"Descarte especial/incineração sempre requer aprovação QA + Gerência"
+"Descarte de produtos não vencidos requer justificativa + 2 aprovações"
+
+Campos específicos:
+
+Motivo do Descarte
+Tipo de Descarte (Comum | Especial | Incineração)
+Valor total
+Quantidade
+Produto vencido (Sim/Não)
+
+
+Card: Matriz de Aprovações (visão geral)
+Tabela consolidada:
+
+Linhas: Tipos de operação
+Colunas: Faixas de valor/condições
+Células: Níveis de aprovação necessários
+Visual: cores indicando complexidade
+
+Verde: Sem aprovação
+Amarelo: 1 aprovação
+Laranja: 2 aprovações
+Vermelho: 3+ aprovações
+
+
+
+Exemplo:
+Operação          | < R$ 1K  | R$ 1-5K  | R$ 5-10K | > R$ 10K
+------------------|----------|----------|----------|----------
+Compra            | Nenhuma  | Gerente  | Gerente  | Diretor
+Descarte          | Gerente  | Gerente  | Dir+QA   | Dir+QA+Fin
+Ajuste Inventário | Nenhuma  | Gerente  | Gerente  | Diretor
+Botão: Exportar Matriz (PDF)
+
+TELA 51: TRILHA DE AUDITORIA
+Rota: /admin/auditoria
+Acesso: Sidebar → Admin → Auditoria
+Estrutura:
+Cabeçalho:
+
+Título: "Trilha de Auditoria"
+Subtítulo: "Histórico completo de ações no sistema"
+Badge: "Logs retidos por [X] dias" (configurável)
+
+Banner de Segurança:
+
+Ícone: 🔒
+Texto: "Esta tela registra todas as ações realizadas no sistema para fins de auditoria e compliance"
+"Logs são imutáveis e criptografados"
+
+
+SEÇÃO 1: FILTROS AVANÇADOS
+Formulário de Busca:
 Linha 1:
 
-Date Range (destaque)
+**Date Range *** (obrigatório)
 
-De: [date picker]
-Até: [date picker]
-Atalhos: Hoje | Últimos 7 dias | Últimos 30 dias | Este Mês | Mês Passado | Personalizado
-
-
-Tipo de Movimentação (dropdown multi-select)
-
-Todas
-📥 Entrada (Recebimento)
-📤 Saída (Expedição)
-🔄 Transferência Interna
-➕ Ajuste Positivo (Inventário)
-➖ Ajuste Negativo (Inventário)
-🗑️ Descarte
-↩️ Devolução ao Fornecedor
-🔙 Devolução de Cliente
+De: [date + time picker]
+Até: [date + time picker]
+Atalhos: Última hora | Hoje | Últimos 7 dias | Últimos 30 dias | Personalizado
+Validação: máximo 90 dias de intervalo
 
 
 
 Linha 2:
 
-Produto (autocomplete searchable)
+Usuário (dropdown searchable)
 
-Busca por SKU ou descrição
-Permite múltiplos produtos
-
-
-Lote (input text)
-
-Busca por código de lote
+Todos
+OU selecionar específico(s)
+Multi-select
 
 
-Local (tree select)
+Tipo de Ação (dropdown multi-select)
 
-Origem OU Destino
-Hierarquia completa
+Create (Criar)
+Read (Ler/Visualizar)
+Update (Atualizar)
+Delete (Excluir)
+Login/Logout
+Aprovação/Rejeição
+Impressão
+Exportação
+Todos
 
 
 
 Linha 3:
 
-Usuário (dropdown searchable)
+Entidade/Módulo (dropdown multi-select)
 
-Todos os usuários
-Filtro: quem executou a movimentação
+Produtos
+Fornecedores
+Requisições
+POs
+Recebimentos
+Estoque
+Movimentações
+Inventários
+Descartes
+Usuários
+Configurações
+Todas
 
 
-Status (dropdown)
+Resultado (dropdown)
 
-Todos | Concluída | Pendente | Cancelada
+Todos
+Sucesso
+Falha
+Erro
 
 
-Motivo (dropdown)
 
-Todos | Venda | Transferência | Ajuste | Inventário | Devolução | Descarte | Outro
+Linha 4:
+
+Busca Livre (input text)
+
+Placeholder: "Buscar em descrição, valores, IDs..."
+Busca textual nos detalhes
+
+
+IP de Origem (input text)
+
+Filtro por endereço IP
+Suporta wildcards (ex: 192.168.1.*)
 
 
 
 Botões:
 
+"Buscar" (verde, grande)
 "Limpar Filtros"
-"Exportar" (XLSX/CSV/PDF)
-"+ Registrar Movimentação Manual"
+"Salvar Filtro" (para reutilização)
+"Exportar Resultados" (XLSX/CSV)
 
 
-Cards de KPIs:
-Card 1: Total de Movimentações (período selecionado)
+SEÇÃO 2: RESUMO DOS RESULTADOS (cards)
+Card 1: Total de Eventos
 
- movimentações
-Comparação vs período anterior: ▲ +15% ou ▼ -5%
+Número: [X] eventos encontrados
+Comparação: vs período anterior
 
-Card 2: Entradas
+Card 2: Usuários Envolvidos
 
-📥 [X] movimentações
-Qtd Total: [Y] unidades
-Valor: R$ [Z]
+Número: [Y] usuários distintos
+Link: "Ver Ranking"
 
-Card 3: Saídas
+Card 3: Ações Críticas
 
-📤 [X] movimentações
-Qtd Total: [Y] unidades
-Valor: R$ [Z]
+Número: [Z] (Deletes, Rejeições, Falhas)
+Badge vermelho se > threshold
 
-Card 4: Saldo Líquido (período)
+Card 4: Distribuição
 
-Entradas - Saídas = [±X] unidades
-Visual: verde se positivo, vermelho se negativo
+Mini gráfico: por tipo de ação
+Pizza ou barras horizontais
 
 
-Gráficos (acima da tabela):
-Gráfico 1: Evolução Temporal (linha)
-
-Eixo X: Data
-Eixo Y: Quantidade
-2 linhas:
-
-Verde: Entradas
-Vermelho: Saídas
-
-
-Permite zoom/pan
-Tooltip com detalhes ao hover
-
-Gráfico 2: Distribuição por Tipo (pizza/donut)
-
-Fatias: cada tipo de movimentação
-% e valor absoluto
-Clicável: aplica filtro por tipo
-
-
-Tabela Principal:
+SEÇÃO 3: TABELA DE LOGS
 Colunas:
 
-Data/Hora (140px)
+Timestamp (160px)
 
-DD/MM/AAAA HH:MM
-Ordenação default: mais recente primeiro
-Agrupamento visual por dia (separador)
-
-
-Tipo (120px)
-
-Ícone + texto:
-
-📥 Entrada
-📤 Saída
-🔄 Transferência
-➕ Ajuste+
-➖ Ajuste-
-🗑️ Descarte
-↩️ Devolução Fornecedor
-🔙 Devolução Cliente
+Data/Hora com precisão de milissegundos
+DD/MM/AAAA HH:MM:SS.mmm
+Ordenação padrão: mais recente primeiro
 
 
-Badge colorido por tipo
+Usuário (150px)
+
+Nome + avatar pequeno
+Se sistema: badge "SISTEMA"
+Tooltip: email, cargo
 
 
-Produto (250px)
+Ação (120px)
 
-SKU (pequeno, mono)
-Descrição (truncada)
-Categoria (badge)
-Clicável: filtra por produto
+Badge colorido:
 
-
-Lote (120px)
-
-Código do lote (mono)
-Se não tem lote: "-" ou "N/A"
-
-
-Validade (100px)
-
-DD/MM/AAAA
-Se não tem: "-"
-Badge de alerta se próximo ao vencimento
+🟢 CREATE (verde)
+🔵 READ (azul)
+🟡 UPDATE (amarelo)
+🔴 DELETE (vermelho)
+🟣 LOGIN/LOGOUT (roxo)
+🟠 APROVAÇÃO (laranja)
+⚫ ERRO (cinza)
 
 
-Quantidade (100px)
-
-Número (grande)
-Sinal: + para entradas, - para saídas
-Cores: verde (+) | vermelho (-)
-Unidade (pequeno)
 
 
-De > Para (250px)
+Entidade (120px)
 
-Se Entrada:
-
-De: Fornecedor/Origem
-Para: [Local destino]
-
-
-Se Saída:
-
-De: [Local origem]
-Para: Cliente/Destino
+Tipo: Produto, PO, Usuário, etc.
+ID da entidade (se aplicável)
+Link: navega para o objeto (se ainda existir)
 
 
-Se Transferência:
+Descrição (300px)
 
-De: [Local A]
-Para: [Local B]
+Texto descritivo da ação
+Exemplos:
 
-
-Se Ajuste:
-
-De/Para: [Local]
-
-
-Visual: seta → entre origem e destino
+"Criou produto SKU-12345"
+"Atualizou PO #789: valor de R$ 1.000 para R$ 1.200"
+"Deletou usuário ID 456"
+"Aprovou ajuste de inventário INV-123"
+"Tentativa de login falhou (senha incorreta)"
 
 
-Motivo (150px)
-
-Texto curto
-Tooltip com motivo completo
-Exemplos: "Venda", "Inventário", "Ajuste por perda", "Transferência interna"
+Truncado com tooltip
 
 
-Usuário (120px)
+Valores Anteriores (200px)
 
-Nome do usuário que executou
-Avatar pequeno
-Tooltip com cargo
-
-
-Documento (120px)
-
-Tipo e número:
-
-PO #12345
-Ordem #456
-INV #789
-Manual
+JSON colapsável
+Mostra estado anterior (se UPDATE/DELETE)
+Botão: "Ver JSON Completo"
+Diff visual se UPDATE
 
 
-Link clicável para o documento
+Valores Novos (200px)
+
+JSON colapsável
+Estado após ação (se CREATE/UPDATE)
+Botão: "Ver JSON Completo"
+Diff visual se UPDATE
 
 
-Valor Unit. (100px)
+IP de Origem (120px)
 
-R$ [preço]
-Se aplicável
-
-
-Valor Total (120px)
-
-R$ [qtd × preço]
-Destacado
+Endereço IP do usuário
+Geolocalização (cidade/país) - tooltip
+Flag do país (ícone)
 
 
-Status (100px)
+Navegador/Dispositivo (150px)
+
+User Agent resumido
+Ícones: 💻 Desktop | 📱 Mobile | 🖥️ Tablet
+Navegador: Chrome | Firefox | Safari | etc.
+Tooltip: User Agent completo
+
+
+Resultado (100px)
 
 Badge:
 
-✅ Concluída
-🔄 Em Andamento
-❌ Cancelada
-⏳ Pendente
+✅ Sucesso (verde)
+❌ Falha (vermelho)
+⚠️ Erro (amarelo)
 
 
+Se falha: tooltip com código/mensagem erro
 
 
 Ações (80px)
 
-Botão "..." (dropdown):
+Botão: "..." (dropdown)
 
-📋 Ver Detalhes
-📄 Imprimir Comprovante
-↩️ Estornar (se permitido)
-📝 Adicionar Observação
-🗑️ Cancelar (se pendente)
+Ver Detalhes Completos
+Ver Contexto (ações anteriores/posteriores)
+Exportar Este Log
+Reportar Anomalia
 
 
 
@@ -273,757 +843,358 @@ Botão "..." (dropdown):
 
 Funcionalidades da Tabela:
 
-Agrupamento: Por dia automaticamente
-
-Subtotal por dia (qtd e valor)
-
-
 Ordenação: Por qualquer coluna
-Filtro inline: Em cada coluna (campo de busca no header)
-Paginação: 50/100/200/Todos
-Exportação: Seleção de colunas visíveis
-Totalização no rodapé:
-
-Total de Movimentações: [X]
-Entradas: +[Y] | Saídas: -[Z]
-Saldo: [Y-Z]
-Valor Total Movimentado: R$ [W]
-
-
+Paginação: 50/100/200/500 por página
+Scroll infinito: Opcional
+Highlight: Linhas críticas (DELETE, ERRO, FALHA) em vermelho claro
+Agrupamento: Por usuário, por dia, por entidade
+Exportação: Seleção múltipla para exportar logs específicos
+Totalizadores: Total de eventos, distribuição por tipo
 
 Destaque Visual:
 
-Linha verde clara: entradas/ajuste+
-Linha vermelha clara: saídas/ajuste-/descarte
-Linha azul clara: transferências
-Linha cinza: canceladas
+Linha vermelha clara: DELETE ou ERRO
+Linha amarela: LOGIN FALHOU
+Linha com borda: Ações de Admin (usuários, configurações)
+Ícone ⚠️: Ações fora do horário comercial (suspeitas)
 
 
-Modal: Detalhes da Movimentação (ao clicar em linha)
-Estrutura:
+SEÇÃO 4: ANÁLISE E INSIGHTS
+Card: Atividade por Usuário (Top 10)
+
+Gráfico de barras horizontais
+Eixo X: Número de ações
+Eixo Y: Usuário
+Click: filtra por usuário
+
+Card: Atividade por Hora do Dia
+
+Gráfico de linha/área
+Eixo X: Hora (0-23h)
+Eixo Y: Número de ações
+Identifica picos e horários incomuns
+
+Card: Anomalias Detectadas
+
+Sistema detecta padrões suspeitos:
+
+⚠️ Login de IP novo/incomum
+⚠️ Múltiplas tentativas de login falhas
+⚠️ Ações fora do horário habitual
+⚠️ Volume de DELETEs acima do normal
+⚠️ Ações de usuário inativo/desabilitado
+
+
+Lista das anomalias com data/hora/usuário
+Botão: "Investigar"
+
+Card: Compliance e Retenção
+
+Status: "Conforme" ou "Atenção Necessária"
+Dias de retenção configurados: [X]
+Logs mais antigos: [data]
+Espaço utilizado: [Y] GB
+Próxima limpeza automática: [data]
+Botão: "Configurar Retenção"
+
+
+SEÇÃO 5: MODAL - DETALHES COMPLETOS DO LOG
+Acionado ao clicar em "Ver Detalhes":
 Card: Informações Gerais
 
-Código da Movimentação: MOV-[número]
-Tipo: [badge grande]
-Data/Hora: [timestamp completo]
-Status: [badge]
-Usuário Responsável: [nome + avatar + cargo]
+ID do Log: [UUID]
+Timestamp Exato: [DD/MM/AAAA HH:MM:SS.mmm]
+Usuário: [nome completo]
 
-Card: Produto
+Email: [email]
+Cargo: [cargo]
+Departamento: [depto]
 
-SKU + Descrição completa
-Imagem (se houver)
-Categoria
-Lote: [código]
-Validade: [data] ([X] dias para vencer)
 
-Card: Movimentação
+IP de Origem: [IP]
 
-Quantidade: [número grande] [unidade]
+Geolocalização: [cidade, estado, país]
+ISP: [provedor]
 
-Visual: sinal + ou - com cor
 
+Sessão ID: [UUID da sessão]
 
-Origem:
+Card: Detalhes da Ação
 
-Tipo: Fornecedor/Local/Cliente/Outro
-Nome/Descrição completa
-Endereço (se aplicável)
+Tipo: [CREATE/READ/UPDATE/DELETE/etc.]
+Entidade: [tipo]
+ID da Entidade: [ID]
+Módulo: [módulo do sistema]
+Endpoint API: [URL]
+Método HTTP: [GET/POST/PUT/DELETE]
 
+Card: Contexto da Requisição
 
-Destino:
+Headers HTTP (JSON viewer)
+Query Parameters
+Body da Requisição (se POST/PUT)
+Response Status: [200/400/500/etc.]
+Response Body (se relevante)
+Tempo de Processamento: [X] ms
 
-Tipo: Local/Cliente/Outro
-Nome/Descrição completa
-Endereço (se aplicável)
+Card: Valores (se UPDATE/DELETE)
 
+Antes:
 
+JSON Viewer com syntax highlight
+Expandível/colapsável
 
-Card: Valores
 
-Valor Unitário: R$ [X]
-Valor Total: R$ [Y]
-Custo Médio (se entrada): R$ [Z]
+Depois:
 
-Card: Rastreabilidade
+JSON Viewer
 
-Documento Origem:
 
-Tipo: PO/Ordem/Inventário/Manual
-Número: [link clicável]
-Data do documento
+Diff Visual:
 
+Mostra lado a lado
+Destaca mudanças:
 
-Movimentação Anterior (deste lote):
+Verde: adicionado
+Vermelho: removido
+Amarelo: modificado
 
-Link para movimentação anterior
 
 
-Movimentação Seguinte (deste lote):
 
-Link para próxima movimentação
 
+Card: Metadados
 
+Navegador: [nome + versão]
+Sistema Operacional: [SO]
+Dispositivo: [tipo]
+User Agent Completo: [string]
+Resolução de Tela: [WxH]
+Timezone: [fuso]
 
-Card: Justificativa e Observações
+Card: Contexto Temporal
 
-Motivo: [texto]
-Observações: [textarea]
-Anexos: [lista de arquivos] (se houver)
+Ação Anterior (mesmo usuário):
 
-Card: Impacto no Estoque
+[timestamp] | [ação] | [entidade]
+Link: "Ver Log"
 
-Saldo Antes: [X] unidades
-Movimentação: [±Y] unidades
-Saldo Depois: [X±Y] unidades
-Local: [nome completo]
 
-Card: Auditoria
+Ação Posterior (mesmo usuário):
 
-Criado por: [usuário] em [data/hora]
-Modificado por: [usuário] em [data/hora] (se aplicável)
-Aprovado por: [usuário] em [data/hora] (se precisou aprovação)
-IP de origem: [IP]
+[timestamp] | [ação] | [entidade]
+Link: "Ver Log"
 
-Botões no Modal:
 
-Imprimir Comprovante
-Estornar Movimentação (se permitido)
+Ações Relacionadas (mesma entidade):
 
-Confirmação crítica
-Gera movimentação reversa
+Timeline das ações nesta entidade
+Links para logs relacionados
 
 
-Adicionar Observação
-Cancelar Movimentação (se pendente)
-Fechar
 
+Card: Ações Administrativas
 
-TELA 32: REGISTRAR MOVIMENTAÇÃO MANUAL
-Rota: /estoque/movimentacoes/nova
-Acesso:
+Botão: "Exportar Este Log (JSON)"
+Botão: "Copiar ID do Log"
+Botão: "Marcar como Investigado"
+Botão: "Adicionar Nota" (para investigações)
+Se anomalia: Botão: "Reportar Incidente de Segurança"
 
-Botão "+ Registrar Movimentação Manual" na lista
-Atalho no dashboard
+Botão: Fechar
 
-Estrutura:
-Cabeçalho:
+SEÇÃO 6: CONFIGURAÇÕES DE AUDITORIA
+Botão: "⚙️ Configurações de Auditoria"
+Modal: Configurações
+Card: Retenção de Logs
 
-Breadcrumb: Home / Estoque / Movimentações / Nova Movimentação
-Título: "Registrar Movimentação Manual"
-Subtítulo: "Use esta tela para ajustes, correções e movimentações não automáticas"
+Input: Período de Retenção: [X] dias
 
-Card: Tipo de Movimentação
-Radio buttons grandes (visual destacado):
-Opção 1: 📥 Entrada Manual
+Recomendado: 90-365 dias
+Regulatório: conforme compliance
 
-Descrição: "Adicionar produtos ao estoque (compra direta, doação, etc.)"
-Casos de uso: "Compra sem PO, doação, encontrado, produção interna"
 
-Opção 2: 📤 Saída Manual
+Checkbox: "Arquivar logs antigos (não deletar)"
 
-Descrição: "Remover produtos do estoque (venda direta, uso interno, etc.)"
-Casos de uso: "Venda sem ordem, uso interno, amostra grátis, consumo"
+Destino do arquivo: [caminho/bucket]
 
-Opção 3: 🔄 Transferência Interna
 
-Descrição: "Mover produtos entre locais (sem entrada/saída do estoque)"
-Casos de uso: "Reorganização, reposição entre zonas"
+Checkbox: "Alerta quando próximo do limite de espaço"
 
-Opção 4: ➕ Ajuste Positivo
+Card: Eventos Rastreados
 
-Descrição: "Correção de estoque para mais (inventário encontrou mais)"
-Casos de uso: "Inventário, erro de lançamento anterior"
+Checkboxes (quais ações logar):
 
-Opção 5: ➖ Ajuste Negativo
+☑ Create (obrigatório)
+☑ Update (obrigatório)
+☑ Delete (obrigatório)
+☐ Read/Visualizações (gera muito volume)
+☑ Login/Logout
+☑ Aprovações/Rejeições
+☑ Impressões
+☑ Exportações
+☑ Mudanças de Configuração (obrigatório)
+☑ Erros e Falhas
 
-Descrição: "Correção de estoque para menos (perda, quebra, roubo)"
-Casos de uso: "Inventário, perda, quebra, vencimento, avaria"
 
-Opção 6: 🗑️ Descarte
+Helper: "Desabilitar Read reduz volume em ~70%"
 
-Descrição: "Descarte de produtos (vencimento, avaria, contaminação)"
-Casos de uso: "Vencido, avariado, contaminado, recall"
-Nota: "Requer aprovação e laudo"
+Card: Detecção de Anomalias
 
-Opção 7: ↩️ Devolução ao Fornecedor
+Checkbox: "Ativar detecção automática de anomalias"
+Sensibilidade: Baixa | Média | Alta
+Notificar: [lista de emails]
+Tipos de anomalia a monitorar:
 
-Descrição: "Devolução de produtos já recebidos"
-Casos de uso: "NC, recall, acordo comercial"
+☑ Login de IP novo
+☑ Tentativas de login falhas
+☑ Ações fora do horário
+☑ Volume anormal de ações
+☑ Padrões suspeitos
 
-Card: Dados do Produto
-Campos:
 
-**Produto *** (autocomplete searchable grande)
 
-Busca por SKU ou descrição
-Mostra: Thumbnail | SKU | Descrição | Categoria | Estoque Atual
-Ao selecionar:
+Card: Exportação e Compliance
 
-Preenche informações do produto (read-only):
+Checkbox: "Exportação diária automática para backup"
 
-Categoria
-Unidade de medida
-Vida útil (se cadastrada)
-Controle por lote? (Sim/Não)
+Formato: JSON | CSV | Syslog
+Destino: [bucket S3, FTP, etc.]
 
 
-Se tem controle de lote: campos Lote/Validade tornam-se obrigatórios
+Checkbox: "Integrar com SIEM" (Security Information and Event Management)
 
+Endpoint: [URL]
 
 
+Checkbox: "Assinar logs digitalmente" (integridade)
+Padrão de Compliance: LGPD | SOX | ISO 27001 | Outro
 
-**Quantidade *** (input number grande)
+Botões:
 
-Placeholder: "Ex: 100"
-Validação:
+Cancelar
+Salvar Configurações
 
-Obrigatório
-Deve ser > 0
-Se SAÍDA ou AJUSTE-: não pode exceder estoque disponível no local selecionado
 
+SEÇÃO 7: RELATÓRIOS DE AUDITORIA
+Botão: "📊 Gerar Relatório de Auditoria"
+Modal: Gerador de Relatório
+Opções:
 
-Sufixo: [unidade] (auto-preenchido)
-Helper: "Estoque atual: [X] unidades" (se saída/ajuste-)
+Período: [date range]
+Usuários: Todos | Específicos
+Tipos de Ação: Todos | Críticos (DELETE, mudanças config)
+Formato: PDF | XLSX | JSON
+Incluir:
 
+☐ Resumo Executivo
+☐ Gráficos de Atividade
+☐ Lista Detalhada de Logs
+☐ Análise de Anomalias
+☐ Recomendações de Segurança
 
-Lote (condicional - obrigatório se produto tem controle)
 
-Se ENTRADA/AJUSTE+:
 
-Input text: "Digite o lote"
-Permite criar novo lote
+Botão: Gerar Relatório
 
+Gera PDF profissional:
 
-Se SAÍDA/AJUSTE-/TRANSFERÊNCIA:
+Capa com período, empresa, data geração
+Índice
+Resumo executivo
+KPIs (total ações, usuários, anomalias)
+Gráficos
+Tabela de logs (filtrados)
+Seção de anomalias detectadas
+Recomendações
+Assinatura digital do sistema
 
-Dropdown searchable: lista lotes disponíveis deste produto
-Mostra: Lote | Validade | Qtd Disponível | Local
-Validação: qtd não pode exceder disponível no lote
 
+Útil para auditorias externas, compliance
 
-Placeholder: "Ex: L2025-001"
 
+RESUMO FINAL DE TODAS AS TELAS
+Completamos 51 telas no total:
+Fundação (3):
 
-Validade (condicional - obrigatório se produto tem controle)
+Login
+Dashboard Principal
+Perfil do Usuário
 
-Se ENTRADA/AJUSTE+:
+Cadastros (6):
+4-5. Produtos (Lista + Cadastro)
+6-7. Fornecedores (Lista + Cadastro)
+8-9. Locais (Hierarquia + Cadastro)
+10-11. Usuários (Lista + Cadastro)
+Requisições (3):
 
-Date picker: "Data de vencimento"
-Validação: deve ser futura
-Calcula e mostra: dias até vencer, % vida útil
-Alerta se < validade mínima aceitável
+Lista de RIs
+Nova/Editar RI
+Detalhes + Aprovação RI
 
+RFQ e Compras (6):
 
-Se SAÍDA/AJUSTE-/TRANSFERÊNCIA:
+Lista RFQs
+Nova RFQ
+Portal Fornecedor - Responder RFQ
+Comparativo de Propostas
+Lista de POs
+Novo/Editar PO
 
-Read-only (vem do lote selecionado)
+Faturação e Etiquetas (2):
 
+Confirmação/Faturação PO
+Impressão Etiquetas Provisórias
 
+Recebimento (4):
 
+Check-in
+Lista POs Aguardando
+Conferência Física (CRÍTICA)
+Registro NC
 
+QA (2):
 
-Card: Origem e Destino (varia conforme tipo)
-Se ENTRADA:
+Fila Quarentena
+Inspeção QA
 
-**Origem *** (radio buttons):
+Recebimento Fiscal (1):
 
-○ Fornecedor
+Conferência Fiscal/Financeiro
 
-Dropdown: selecionar fornecedor cadastrado
+Estoque (4):
 
+Consulta Saldo
+Histórico Movimentações
+Registrar Movimentação Manual
+Transferência entre Locais
 
-○ Outro (especificar)
+Inventário (4):
 
-Input text: "Descrever origem"
+Agenda de Inventários
+Novo Inventário
+Contagem de Inventário
+Ajustes de Inventário
 
+Expedição (4):
 
-
-
-**Local de Destino *** (tree select)
-
-Hierarquia completa de locais
-Valida se local aceita categoria do produto
-
-
-
-Se SAÍDA:
-
-**Local de Origem *** (tree select ou autocomplete)
-
-Filtra por locais que têm este produto/lote
-Mostra qtd disponível em cada local
-
-
-**Destino *** (radio buttons):
-
-○ Cliente
-
-Input text: "Nome do cliente"
-
-
-○ Uso Interno
-
-Dropdown: Departamento/Área
-
-
-○ Outro (especificar)
-
-Input text
-
-
-
-
-
-Se TRANSFERÊNCIA:
-
-**Local de Origem *** (tree select)
-
-Filtra por locais que têm este produto/lote
-Mostra qtd disponível
-
-
-**Local de Destino *** (tree select)
-
-Não pode ser igual à origem (validação)
-Valida condições de armazenagem (temperatura, etc.)
-Alerta se produto requer condições que destino não tem
-
-
-
-Se AJUSTE+ ou AJUSTE-:
-
-**Local *** (tree select)
-
-Local afetado pelo ajuste
-Se AJUSTE-: mostra qtd atual disponível
-
-
-
-Se DESCARTE:
-
-**Local de Origem *** (tree select)
-
-Local onde está o produto a descartar
-
-
-Destino: Descarte (fixo)
-
-Se DEVOLUÇÃO:
-
-**Local de Origem *** (tree select)
-**Fornecedor Destino *** (dropdown)
-
-Preferencialmente o fornecedor original (sugere)
-
-
-
-Card: Motivo e Justificativa
-Campos:
-
-**Motivo *** (dropdown - opções variam conforme tipo)
-
-Se ENTRADA:
-
-Compra Direta (sem PO)
-Doação
-Produção Interna
-Transferência de Outra Unidade
-Devolução de Cliente
-Outro
-
-
-Se SAÍDA:
-
-Venda Direta
-Uso Interno/Consumo
-Amostra Grátis
-Bonificação
-Transferência para Outra Unidade
-Outro
-
-
-Se AJUSTE:
-
-Inventário (sobra/falta)
-Correção de Erro de Lançamento
-Perda/Quebra
-Roubo/Furto
-Vencimento
-Avaria/Dano
-Outro
-
-
-Se DESCARTE:
-
-Vencimento
-Avaria/Contaminação
-Recall
-Qualidade Comprometida
-Regulatório
-Outro
-
-
-Se TRANSFERÊNCIA:
-
+Lista Ordens Separação
+Nova Ordem + Sugestão FEFO (CRÍTICA)
+Execução de Picking
 Reposição
-Reorganização
-Otimização de Espaço
-Consolidação
-Outro
 
+Validade & Compliance (6):
 
-Se DEVOLUÇÃO:
+Dashboard de Validades (SUPER CRÍTICA)
+Lista Campanhas
+Nova Campanha
+Monitoramento de Campanha
+Lista/Registro Descartes
+Hub de Relatórios
 
-Não Conformidade
-Recall
-Acordo Comercial
-Produto Errado
-Outro
+Admin & Parâmetros (4):
 
-
-
-
-**Justificativa Detalhada *** (textarea grande)
-
-Placeholder: "Descreva em detalhes o motivo desta movimentação..."
-Validação:
-
-Obrigatório
-Mínimo: 20 caracteres
-Recomendado: ser específico e claro
-
-
-Contador de caracteres
-Helper: "Esta informação será auditada. Seja claro e preciso."
-
-
-Documento de Referência (opcional)
-
-Input text
-Placeholder: "Ex: NF 12345, Email, Ordem Interna, etc."
-Upload de documento (opcional)
-
-
-Observações Adicionais (textarea)
-
-Opcional
-Placeholder: "Informações complementares..."
-
-
-
-Card: Valores (opcional mas recomendado)
-Campos:
-
-Valor Unitário (input number decimal)
-
-Placeholder: "R$ 0,00"
-Formatação monetária
-Opcional para AJUSTES
-Obrigatório para ENTRADA
-
-
-Valor Total (calculado)
-
-Qtd × Valor Unitário
-Read-only
-Formatado: R$ [valor]
-
-
-
-Card: Aprovação (se necessário)
-Condicional - aparece se:
-
-Ajuste > valor limite (ex: R$ 1.000)
-Descarte
-Devolução
-Saída sem documento
-
-Campos:
-
-Requer Aprovação de: (dropdown)
-
-Lista de aprovadores (gerentes/diretores)
-Multi-select se múltiplas aprovações
-
-
-Enviar para Aprovação: (checkbox)
-
-Envia notificação imediata
-
-
-Status: "Aguardando Aprovação" (badge)
-
-Card: Anexos
-
-Upload múltiplo:
-
-Fotos (se avaria/descarte)
-Documentos (NF, emails, aprovações)
-Laudos (se descarte)
-Outros
-
-
-Recomendado para: Ajustes, Descartes, Devoluções
-
-Validações Globais:
-
-Tipo obrigatório
-Produto obrigatório
-Quantidade obrigatória e > 0
-Se produto tem controle: Lote e Validade obrigatórios
-Origem/Destino conforme tipo
-Motivo obrigatório
-Justificativa com mínimo 20 caracteres
-Se SAÍDA/AJUSTE-: qtd ≤ disponível
-Se TRANSFERÊNCIA: origem ≠ destino
-Se DESCARTE: anexo de foto/laudo recomendado
-
-Botões:
-Cancelar:
-
-Confirmação se houver dados preenchidos
-Volta para lista
-
-Salvar Rascunho:
-
-Salva sem executar
-Status = rascunho
-Permite retomar depois
-Toast: "Rascunho salvo"
-
-Registrar Movimentação:
-
-Validação completa
-Se requer aprovação:
-
-Modal: "Esta movimentação requer aprovação"
-Lista aprovadores
-Checkbox: "Confirmo que as informações estão corretas"
-Botão: "Enviar para Aprovação"
-Ações:
-
-Salva com status = aguardando_aprovacao
-Notifica aprovadores
-Toast: "Enviado para aprovação de [Nome]"
-Redireciona para lista (mostra status pendente)
-
-
-
-
-Se não requer aprovação:
-
-Modal de confirmação:
-
-"Confirmar Movimentação?"
-Resumo: Tipo | Produto | Qtd | Lote | De > Para | Motivo
-Alerta (se crítico): "Esta ação afetará o estoque imediatamente"
-Checkbox: "Confirmo que revisei todos os dados" *
-Botão: "Confirmar"
-
-
-Ao confirmar:
-
-POST /api/movimentacoes/manual
-Cria registro de Movimentacao
-Se ENTRADA/AJUSTE+:
-
-Cria ou atualiza LoteEstoque
-Adiciona quantidade
-
-
-Se SAÍDA/AJUSTE-:
-
-Diminui quantidade do LoteEstoque
-Se qtd=0: remove ou marca como vazio
-
-
-Se TRANSFERÊNCIA:
-
-Diminui qtd do local origem
-Aumenta qtd do local destino
-Mantém mesmo lote/validade
-
-
-Se DESCARTE:
-
-Remove quantidade
-Registra em log de descartes
-Gera laudo (se configurado)
-
-
-Se DEVOLUÇÃO:
-
-Remove quantidade
-Cria registro de devolução ao fornecedor
-Impacta scorecard (leve)
-
-
-Registra log de auditoria detalhado
-Atualiza saldos em tempo real
-Gera comprovante de movimentação (PDF)
-Toast: "Movimentação registrada! Código: MOV-[número]"
-Redireciona:
-
-"Ver Comprovante" (PDF)
-"Imprimir Etiqueta" (se entrada com novo lote)
-"Nova Movimentação" | "Voltar à Lista"
-
-
-
-
-
-
-
-
-TELA 33: TRANSFERÊNCIA ENTRE LOCAIS
-Rota: /estoque/transferencias
-Acesso: Sidebar → Estoque → Transferências
-Estrutura:
-Cabeçalho:
-
-Título: "Transferências de Estoque"
-Subtítulo: "Movimentação de produtos entre locais"
-Botão: "+ Nova Transferência"
-
-Filtros:
-
-Date Range: período
-Produto: autocomplete
-Lote: input text
-Local Origem: tree select
-Local Destino: tree select
-Status: Todos | Pendente | Em Trânsito | Concluída | Cancelada
-Usuário Solicitante
-Botões: Limpar | Exportar
-
-Cards de KPIs:
-
-Transferências Pendentes ([X])
-Em Trânsito ([Y])
-Concluídas Hoje ([Z])
-Valor em Trânsito (R$)
-
-Tabela:
-
-Colunas:
-
-Código (TRANS-[número])
-Data/Hora Solicitação
-Produto (SKU + Descrição)
-Lote
-Qtd
-De (Local Origem)
-Para (Local Destino)
-Solicitante
-Status (badge: Pendente | Em Trânsito | Concluída | Cancelada)
-Ações (Ver | Confirmar Recebimento | Cancelar)
-
-
-Ordenação, paginação
-Linha destaca: pendentes há > 24h em amarelo
-
-Modal: Nova Transferência
-Opção 1: Transferência Simples (1 produto)
-Campos:
-
-Produto * (autocomplete)
-Lote * (dropdown dos lotes disponíveis deste produto)
-
-Mostra: Lote | Validade | Qtd Disponível | Local Atual
-
-
-Quantidade * (input number)
-
-Validação: ≤ disponível no lote
-Sufixo: [unidade]
-
-
-Local Origem * (tree select)
-
-Pré-preenche com local do lote (editável)
-
-
-Local Destino * (tree select)
-
-Validação: ≠ origem
-Alerta se condições incompatíveis
-
-
-Motivo * (dropdown):
-
-Reposição
-Reorganização
-Otimização
-Consolidação
-Pedido Interno
-Outro
-
-
-Observações (textarea)
-Prioridade (radio): Normal | Alta | Urgente
-
-Opção 2: Transferência em Lote (múltiplos produtos)
-
-Tabela para adicionar múltiplos itens
-Colunas: Produto | Lote | Qtd | De | Para | Remover
-Botão: "+ Adicionar Item"
-Todos os itens compartilham:
-
-Motivo
-Observações
-Prioridade
-
-
-
-Botões:
-
-Salvar Rascunho
-Solicitar Transferência
-
-Valida tudo
-Cria registro com status=pendente
-Notifica responsável do local origem
-Toast: "Transferência solicitada! Código: TRANS-[número]"
-
-
-
-Modal: Confirmar Recebimento de Transferência
-Acesso: Botão "Confirmar Recebimento" na lista (só aparece se status=em_transito)
-Campos:
-
-Transferência: TRANS-[número] (read-only)
-Produto, Lote, Qtd Esperada (read-only)
-Local Destino (read-only)
-Qtd Recebida * (input number)
-
-Default: qtd esperada
-Permite divergência (registra)
-
-
-Condições do Recebimento (radio):
-
-● Conforme (sem avarias)
-○ Com Avarias Leves
-○ Com Avarias Graves
-
-
-Se avarias: Textarea "Descrever avarias"
-Upload de fotos (opcional)
-Observações do Recebimento
-
-Botões:
-
-Confirmar Recebimento
-
-Valida
-Atualiza estoque:
-
-Diminui origem
-Aumenta destino
-
-
-Status = concluída
-Registra data/hora real
-Se divergência: registra NC leve
-Toast: "Transferência concluída!"
+Políticas de Validade
+Padrões de Etiquetas
+Workflows
+Trilha de Auditoria

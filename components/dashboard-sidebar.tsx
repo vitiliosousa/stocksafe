@@ -133,16 +133,6 @@ export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarP
       badgeVariant: "destructive",
     },
     {
-      icon: BarChart3,
-      label: "Relatórios",
-      children: [
-        { icon: BarChart3, label: "Fornecedores", href: "/relatorios/fornecedores" },
-        { icon: BarChart3, label: "Perdas", href: "/relatorios/perdas" },
-        { icon: BarChart3, label: "Curva ABC", href: "/relatorios/abc" },
-        { icon: BarChart3, label: "Itens em Risco", href: "/relatorios/risco" },
-      ],
-    },
-    {
       icon: Settings,
       label: "Admin",
       roles: ["ADMIN"],
