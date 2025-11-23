@@ -6,26 +6,13 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  LayoutDashboard,
-  Package,
-  FileText,
-  ShoppingCart,
-  CheckSquare,
-  FlaskConical,
-  Warehouse,
-  Truck,
-  AlertTriangle,
-  BarChart3,
-  Settings,
   ChevronDown,
   ChevronRight,
-  Users,
-  MapPin,
-  Building2,
   HelpCircle,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { getSidebarConfig } from "@/lib/sidebar-config"
 
 interface DashboardSidebarProps {
   isCollapsed: boolean
@@ -33,139 +20,45 @@ interface DashboardSidebarProps {
 }
 
 interface MenuItem {
-  icon: React.ElementType
+  icon: any
   label: string
-  href?: string
-  badge?: number
-  badgeVariant?: "default" | "warning" | "destructive"
-  children?: MenuItem[]
-  roles?: string[]
+  path?: string | null
+  badge?: string | number | null
+  highlight?: boolean
+  submenu?: Array<{ label: string; path: string }>
 }
 
 export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarProps) {
   const pathname = usePathname()
   const [expandedItems, setExpandedItems] = useState<string[]>(["Dashboard"])
+  const [profile, setProfile] = useState<string>(userProfile)
 
-  const menuItems: MenuItem[] = [
-    {
-      icon: LayoutDashboard,
-      label: "Dashboard",
-      href: "/dashboard",
-    },
-    {
-      icon: Package,
-      label: "Cadastros",
-      children: [
-        { icon: Package, label: "Produtos", href: "/cadastros/produtos" },
-        { icon: Building2, label: "Fornecedores", href: "/cadastros/fornecedores" },
-        { icon: MapPin, label: "Locais", href: "/cadastros/locais" },
-        { icon: Users, label: "Usuários", href: "/cadastros/usuarios" },
-      ],
-    },
-    {
-      icon: FileText,
-      label: "Requisições",
-      children: [
-        { icon: FileText, label: "Minhas Requisições", href: "/requisicoes" },
-        { icon: FileText, label: "Nova Requisição", href: "/requisicoes/nova" },
-        {
-          icon: FileText,
-          label: "Aprovar Requisições",
-          href: "/requisicoes/aprovar",
-          roles: ["GESTOR", "ADMIN"],
-        },
-      ],
-    },
-    {
-      icon: ShoppingCart,
-      label: "Compras",
-      children: [
-        { icon: ShoppingCart, label: "RFQs", href: "/compras/rfqs" },
-        { icon: ShoppingCart, label: "Pedidos de Compra", href: "/compras/pos" },
-        {
-          icon: ShoppingCart,
-          label: "Portal Fornecedor",
-          href: "/compras/portal-fornecedor",
-          roles: ["FORNECEDOR"],
-        },
-      ],
-    },
-    {
-      icon: CheckSquare,
-      label: "Recebimento",
-      badge: 3,
-      children: [
-        { icon: CheckSquare, label: "Check-in", href: "/recebimento/checkin" },
-        { icon: CheckSquare, label: "Conferência", href: "/recebimento/conferencia" },
-        { icon: CheckSquare, label: "Aguardando Recebimento", href: "/recebimento/aguardando" },
-      ],
-    },
-    {
-      icon: FlaskConical,
-      label: "Qualidade",
-      href: "/qualidade/quarentena",
-      badge: 2,
-      badgeVariant: "warning",
-    },
-    {
-      icon: Warehouse,
-      label: "Estoque",
-      children: [
-        { icon: Warehouse, label: "Consultar Estoque", href: "/estoque/consulta" },
-        { icon: Warehouse, label: "Movimentações", href: "/estoque/movimentacoes" },
-        { icon: Warehouse, label: "Transferências", href: "/estoque/transferencias" },
-        { icon: Warehouse, label: "Inventário", href: "/estoque/inventario" },
-      ],
-    },
-    {
-      icon: Truck,
-      label: "Expedição",
-      children: [
-        { icon: Truck, label: "Ordens de Separação", href: "/expedicao/ordens" },
-        { icon: Truck, label: "Reposição", href: "/expedicao/reposicao" },
-      ],
-    },
-    {
-      icon: AlertTriangle,
-      label: "Validade",
-      href: "/validade/dashboard",
-      badge: 5,
-      badgeVariant: "destructive",
-    },
-    {
-      icon: Settings,
-      label: "Admin",
-      roles: ["ADMIN"],
-      children: [
-        { icon: Settings, label: "Políticas de Validade", href: "/admin/politicas" },
-        { icon: Settings, label: "Padrões de Etiquetas", href: "/admin/etiquetas" },
-        { icon: Settings, label: "Workflows", href: "/admin/workflows" },
-        { icon: Settings, label: "Auditoria", href: "/admin/auditoria" },
-      ],
-    },
-  ]
+  // Read profile from localStorage on mount
+  useEffect(() => {
+    const storedProfile = localStorage.getItem("userProfile")
+    if (storedProfile) {
+      setProfile(storedProfile)
+    }
+  }, [])
+
+  // Get menu items based on profile
+  const menuItems = getSidebarConfig(profile).items
 
   const toggleExpanded = (label: string) => {
     setExpandedItems((prev) => (prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label]))
   }
 
-  const isActive = (href?: string) => {
-    if (!href) return false
-    return pathname === href
+  const isActive = (path?: string | null) => {
+    if (!path) return false
+    return pathname === path
   }
 
   const hasActiveChild = (item: MenuItem): boolean => {
-    if (!item.children) return false
-    return item.children.some((child) => {
-      if (child.href && pathname === child.href) return true
-      if (child.children) return hasActiveChild(child)
+    if (!item.submenu) return false
+    return item.submenu.some((child) => {
+      if (child.path && pathname === child.path) return true
       return false
     })
-  }
-
-  const shouldShowItem = (item: MenuItem) => {
-    if (!item.roles) return true
-    return item.roles.includes(userProfile)
   }
 
   // Auto-expand menu when a child is active
@@ -178,13 +71,11 @@ export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarP
   }, [pathname])
 
   const renderMenuItem = (item: MenuItem, level = 0) => {
-    if (!shouldShowItem(item)) return null
-
-    const hasChildren = item.children && item.children.length > 0
+    const hasSubmenu = item.submenu && item.submenu.length > 0
     const isExpanded = expandedItems.includes(item.label)
     const Icon = item.icon
 
-    if (hasChildren) {
+    if (hasSubmenu) {
       const hasActive = hasActiveChild(item)
       return (
         <div key={item.label}>
@@ -195,6 +86,7 @@ export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarP
               "hover:bg-emerald-50 hover:text-emerald-600",
               hasActive && "text-emerald-600",
               isCollapsed && "justify-center px-2",
+              item.highlight && "bg-yellow-50",
             )}
           >
             <Icon className="w-5 h-5 flex-shrink-0" />
@@ -203,14 +95,17 @@ export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarP
                 <span className="flex-1 text-left">{item.label}</span>
                 {item.badge && (
                   <Badge
-                    variant={item.badgeVariant === "warning" ? "default" : (item.badgeVariant || "default")}
+                    variant="default"
                     className={cn(
                       "h-5 min-w-5 flex items-center justify-center",
-                      item.badgeVariant === "warning" && "bg-yellow-500",
-                      item.badgeVariant === "destructive" && "bg-red-500",
+                      item.badge === "criticos" && "bg-red-500",
+                      item.badge === "pendentes" && "bg-yellow-500",
+                      item.badge === "aprovacao" && "bg-blue-500",
+                      item.badge === "aguardando" && "bg-orange-500",
+                      item.badge === "quarentena" && "bg-purple-500",
                     )}
                   >
-                    {item.badge}
+                    {typeof item.badge === "number" ? item.badge : "!"}
                   </Badge>
                 )}
                 {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -219,25 +114,36 @@ export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarP
           </button>
           {isExpanded && !isCollapsed && (
             <div className="ml-4 border-l border-gray-200">
-              {item.children?.map((child) => renderMenuItem(child, level + 1))}
+              {item.submenu?.map((child) => (
+                <Link
+                  key={child.label}
+                  href={child.path}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors",
+                    "hover:bg-emerald-50 hover:text-emerald-600",
+                    isActive(child.path) && "bg-emerald-100 text-emerald-700 border-r-4 border-emerald-600",
+                    "pl-8",
+                  )}
+                >
+                  <span className="flex-1">{child.label}</span>
+                </Link>
+              ))}
             </div>
           )}
         </div>
       )
     }
 
-    // Special styling for Validade item
-    const isValidadeItem = item.label === "Validade"
-
+    // Item without submenu
     return (
       <Link
         key={item.label}
-        href={item.href || "#"}
+        href={item.path || "#"}
         className={cn(
           "flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors",
           "hover:bg-emerald-50 hover:text-emerald-600",
-          isActive(item.href) && "bg-emerald-100 text-emerald-700 border-r-4 border-emerald-600",
-          isValidadeItem && "bg-yellow-50",
+          isActive(item.path) && "bg-emerald-100 text-emerald-700 border-r-4 border-emerald-600",
+          item.highlight && "bg-yellow-50",
           isCollapsed && "justify-center px-2",
           level > 0 && "pl-8",
         )}
@@ -248,14 +154,17 @@ export function DashboardSidebar({ isCollapsed, userProfile }: DashboardSidebarP
             <span className="flex-1">{item.label}</span>
             {item.badge && (
               <Badge
-                variant={item.badgeVariant === "warning" ? "default" : (item.badgeVariant || "default")}
+                variant="default"
                 className={cn(
                   "h-5 min-w-5 flex items-center justify-center",
-                  item.badgeVariant === "warning" && "bg-yellow-500",
-                  item.badgeVariant === "destructive" && "bg-red-500",
+                  item.badge === "criticos" && "bg-red-500",
+                  item.badge === "pendentes" && "bg-yellow-500",
+                  item.badge === "aprovacao" && "bg-blue-500",
+                  item.badge === "aguardando" && "bg-orange-500",
+                  item.badge === "quarentena" && "bg-purple-500",
                 )}
               >
-                {item.badge}
+                {typeof item.badge === "number" ? item.badge : "!"}
               </Badge>
             )}
           </>

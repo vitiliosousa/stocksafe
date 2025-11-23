@@ -275,7 +275,7 @@ export function InventoryAdjustmentsContent({ inventoryId }: { inventoryId: stri
 
     const updatedDivergences = divergences.map((div) =>
       div.id === selectedDivergence.id
-        ? { ...div, status: "approved", approvedBy: "Supervisor Atual", approvedAt: new Date().toISOString() }
+        ? { ...div, status: "approved" as const, approvedBy: "Supervisor Atual", approvedAt: new Date().toISOString(), pendingSince: null as null }
         : div,
     )
     setDivergences(updatedDivergences)

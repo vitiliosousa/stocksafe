@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Mail, Lock, Eye, EyeOff, Package } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Mail, Lock, Eye, EyeOff, Package, User } from "lucide-react";
 import { ForgotPasswordModal } from "@/components/forgot-password-modal";
 import Image from "next/image";
 import logoImage from "@/public/logo.svg";
@@ -15,6 +16,7 @@ import logoImage from "@/public/logo.svg";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [profile, setProfile] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,7 +27,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
+    if (!email || !password || !profile) {
       setError("Por favor, preencha todos os campos");
       return;
     }
@@ -43,11 +45,14 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
+      // Save profile to localStorage
+      localStorage.setItem("userProfile", profile);
+
       // TODO: Implement actual login API call
       // const response = await fetch('/api/auth/login', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password, rememberMe })
+      //   body: JSON.stringify({ email, password, rememberMe, profile })
       // })
 
       // Simulate API call
@@ -149,6 +154,31 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Profile Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="profile" className="text-sm font-medium">
+                  Perfil de Acesso
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10" />
+                  <Select value={profile} onValueChange={setProfile}>
+                    <SelectTrigger id="profile" className="pl-10 h-12 focus:ring-emerald-500">
+                      <SelectValue placeholder="Selecione seu perfil" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GERAL">Geral (Acesso Completo)</SelectItem>
+                      <SelectItem value="ADMIN">Administrador</SelectItem>
+                      <SelectItem value="COMPRAS">Compras</SelectItem>
+                      <SelectItem value="RECEBIMENTO">Recebimento/Armazém</SelectItem>
+                      <SelectItem value="QA">Qualidade (QA)</SelectItem>
+                      <SelectItem value="FINANCEIRO">Financeiro</SelectItem>
+                      <SelectItem value="REQUISITANTE">Requisitante</SelectItem>
+                      <SelectItem value="FORNECEDOR">Fornecedor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               {/* Email Field */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">

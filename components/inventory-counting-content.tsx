@@ -64,7 +64,7 @@ const mockItems = [
     unit: "kg",
     unitValue: 18.5,
     status: "pending",
-    countedQty: null,
+    countedQty: null as number | null,
   },
   {
     id: "2",
